@@ -1,0 +1,561 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Periodontal Diagnosis Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #8B0000;
+    --primary-light: #B22222;
+    --primary-dark: #5c0000;
+    --bg: #fdf6f6;
+    --card: #ffffff;
+    --text: #2b2b2b;
+    --border: #e8d4d4;
+    --shadow: 0 4px 20px rgba(139,0,0,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'IBM Plex Sans Thai',sans-serif; }
+  body { background:var(--bg); color:var(--text); line-height:1.6; }
+  header {
+    background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+    color:#fff; padding:32px 20px; text-align:center;
+    box-shadow:var(--shadow);
+  }
+  header h1 { font-size:1.8rem; font-weight:700; margin-bottom:6px; }
+  header p { font-size:0.95rem; opacity:0.9; font-weight:300; }
+  .container { max-width:900px; margin:0 auto; padding:24px 16px 60px; }
+  .tabs { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+  .tab {
+    flex:1; min-width:200px; padding:14px; border:none; cursor:pointer;
+    background:var(--card); color:var(--primary); font-size:1rem; font-weight:600;
+    border-radius:12px; box-shadow:var(--shadow); transition:.2s;
+    border:2px solid transparent;
+  }
+  .tab.active { background:var(--primary); color:#fff; }
+  .tab:hover { border-color:var(--primary-light); }
+  .panel { display:none; }
+  .panel.active { display:block; }
+  .card {
+    background:var(--card); border-radius:16px; padding:24px;
+    box-shadow:var(--shadow); margin-bottom:20px; border:1px solid var(--border);
+  }
+  .card h2 { color:var(--primary); font-size:1.25rem; margin-bottom:14px; font-weight:600; border-bottom:2px solid var(--border); padding-bottom:8px;}
+  .card h3 { color:var(--primary-light); font-size:1.05rem; margin:16px 0 8px; font-weight:600;}
+  label { display:block; margin:12px 0 6px; font-weight:500; font-size:0.95rem; }
+  .hint { font-size:0.82rem; color:#888; font-weight:300; margin-top:2px;}
+  input[type=number], input[type=text], select {
+    width:100%; padding:11px 14px; border:2px solid var(--border);
+    border-radius:10px; font-size:0.95rem; transition:.2s; background:#fff;
+  }
+  input:focus, select:focus { outline:none; border-color:var(--primary-light); }
+  .checkbox-group { display:flex; flex-direction:column; gap:10px; margin-top:8px;}
+  .check-item {
+    display:flex; align-items:flex-start; gap:10px; padding:12px;
+    background:var(--bg); border-radius:10px; border:1px solid var(--border);
+    cursor:pointer; transition:.2s;
+  }
+  .check-item:hover { border-color:var(--primary-light); }
+  .check-item input { margin-top:4px; width:18px; height:18px; accent-color:var(--primary); cursor:pointer;}
+  .check-item span { font-size:0.92rem; }
+  .radio-group { display:flex; flex-direction:column; gap:8px; margin-top:8px;}
+  .radio-item {
+    display:flex; align-items:flex-start; gap:10px; padding:12px;
+    background:var(--bg); border-radius:10px; border:1px solid var(--border); cursor:pointer;
+  }
+  .radio-item input { margin-top:3px; accent-color:var(--primary); cursor:pointer;}
+  button.btn {
+    background:var(--primary); color:#fff; border:none; padding:14px 28px;
+    border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer;
+    transition:.2s; width:100%; margin-top:18px;
+  }
+  button.btn:hover { background:var(--primary-dark); }
+  .result {
+    margin-top:20px; padding:20px; border-radius:14px;
+    background:linear-gradient(135deg,#fff5f5,#ffeaea);
+    border:2px solid var(--primary-light); display:none;
+  }
+  .result.show { display:block; animation:fade .3s;}
+  @keyframes fade { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+  .result h3 { color:var(--primary); margin-bottom:10px;}
+  .dx-final {
+    font-size:1.2rem; font-weight:700; color:var(--primary-dark);
+    padding:14px; background:#fff; border-radius:10px; margin-top:10px; border-left:5px solid var(--primary);
+  }
+  .step-info { font-size:0.9rem; color:#555; margin:6px 0; padding-left:8px; border-left:3px solid var(--border);}
+  .error { color:var(--primary); font-weight:600; }
+  .remarks { font-size:0.85rem; color:#777; margin-top:14px; padding:12px; background:var(--bg); border-radius:10px;}
+  .pct-display { font-weight:600; color:var(--primary); }
+  footer {
+    text-align:center; padding:30px 20px; background:var(--primary-dark); color:#fff; font-size:0.85rem; line-height:1.8;
+  }
+  footer a { color:#ffd0d0; }
+  sup { font-size:0.65em; }
+  .divider { height:1px; background:var(--border); margin:18px 0;}
+  .info-box { background:#fff8e1; border:1px solid #ffe0a0; border-radius:10px; padding:12px; font-size:0.88rem; margin:10px 0; color:#7a5a00;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Periodontal Diagnosis Tool</h1>
+  <p>เครื่องมือช่วยวินิจฉัยโรคปริทันต์ตามแนวทาง Thai Association of Periodontology 2018 &amp; AAP 1999</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(0)">Thai Periodontology 2018</button>
+    <button class="tab" onclick="switchTab(1)">AAP 1999 Classification</button>
+  </div>
+
+  <!-- ========== PANEL 1: THAI 2018 ========== -->
+  <div class="panel active" id="panel0">
+    <div class="card">
+      <h2>ใช่ Case P หรือไม่?</h2>
+      <h3>Conditions (ตรง ≥ 1 ข้อ)</h3>
+      <div class="checkbox-group">
+        <label class="check-item"><input type="checkbox" id="c11"><span>Interdental CAL ≥ 2 mm in ≥ 2 non-adjacent teeth</span></label>
+        <label class="check-item"><input type="checkbox" id="c12"><span>B/Li CAL ≥ 3 mm with PD ≥ 4 mm in ≥ 2 teeth</span></label>
+      </div>
+      <h3>ข้อยกเว้น (หากเป็นสาเหตุจากข้อใดข้อหนึ่งต่อไปนี้ จะ <u>ไม่ใช่</u> Case P)</h3>
+      <div class="checkbox-group">
+        <label class="check-item"><input type="checkbox" id="c13"><span>Gingival recession of traumatic origin (เหงือกร่นจากการแปรงฟัน)</span></label>
+        <label class="check-item"><input type="checkbox" id="c14"><span>Dental caries at cervical area</span></label>
+        <label class="check-item"><input type="checkbox" id="c15"><span>CAL on Distal of 2<sup>nd</sup> molar from 3<sup>rd</sup> molar</span></label>
+        <label class="check-item"><input type="checkbox" id="c16"><span>Endo. lesion drain through marginal periodontium</span></label>
+        <label class="check-item"><input type="checkbox" id="c17"><span>Vertical root fracture</span></label>
+      </div>
+      <button class="btn" onclick="evalStep1()">ประเมิน</button>
+      <div class="result" id="r1"></div>
+    </div>
+
+    <!-- Case H/G card -->
+    <div class="card" id="cardHG" style="display:none;">
+      <h2>Case H หรือ Case G</h2>
+      <label>%BOP (Bleeding on Probing)</label>
+      <input type="number" id="bop" step="0.1" placeholder="เช่น 8.5">
+      <span class="hint">&lt;10% = Health, 10-30% = Localized gingivitis, &gt;30% = Generalized gingivitis</span>
+
+      <h3>สภาพ Periodontium (on... in...)</h3>
+      <div class="radio-group" id="periodStatus">
+        <label class="radio-item"><input type="radio" name="ps" value="intact"><span>ไม่มี CAL และไม่มี RBL = <b>on an intact periodontium</b></span></label>
+        <label class="radio-item"><input type="radio" name="ps" value="reduced_non"><span>มี CAL / PD ≤ 3 mm (มี RBL หรือไม่ก็ได้) / Gingival recession / เคยทำ Surgical crown lengthening = <b>on a reduced periodontium in a non-periodontitis patient</b></span></label>
+        <label class="radio-item"><input type="radio" name="ps" value="stable"><span>(สำหรับ Case H) มี CAL / RBL / PD ≤ 4 mm โดยจุด PD = 4 mm ไม่มี BOP = <b>on a reduced periodontium in a stable periodontitis patient</b></span></label>
+        <label class="radio-item"><input type="radio" name="ps" value="treated"><span>(สำหรับ Case G) มี CAL / RBL / PD ≤ 3 mm พร้อมประวัติ Successful perio. treatment = <b>on a reduced periodontium in a successfully treated periodontitis patient</b></span></label>
+      </div>
+      <div class="info-box">⚠️ หากพบ True pocket ≥ 4 mm ที่จุดที่มี BOP ให้กลับไปพิจารณาขั้นตอนแรกใหม่</div>
+      <button class="btn" onclick="evalStep2()">วินิจฉัย Case H / G</button>
+      <div class="result" id="r2"></div>
+    </div>
+
+    <!-- Case P card -->
+    <div class="card" id="cardP" style="display:none;">
+      <h2>Case P: Extent, Stage, Grade</h2>
+      <div class="info-box">⚠️ หากไม่พบ True pocket ≥ 4 mm เมื่อ charting ให้กลับไปพิจารณา Case H/G (ยกเว้นเข้า Condition Interdental CAL ≥ 2 mm หรือ B/Li CAL ≥ 3 mm with PD ≥ 4 mm และไม่เข้าข้อยกเว้น)</div>
+
+      <h3>Extent</h3>
+      <label>% of teeth with CAL</label>
+      <input type="number" id="extentPct" step="0.1" placeholder="เช่น 35">
+      <div class="checkbox-group">
+        <label class="check-item"><input type="checkbox" id="molarIncisor"><span>พบ CAL เฉพาะ Molar และ/หรือ Incisor (Molar-incisor pattern)</span></label>
+      </div>
+
+      <div class="divider"></div>
+      <h3>Stage — พิจารณาซี่ที่มี GREATEST LOSS</h3>
+      <label>CAL (mm) ของซี่ที่มี greatest loss</label>
+      <input type="number" id="stageCAL" step="0.1" placeholder="เช่น 6">
+      <span class="hint">หรือพิจารณาจาก RBL: Coronal⅓ → Stage I/II, Middle/Apical⅓ → Stage III/IV</span>
+      <label>ตำแหน่ง RBL (ถ้าใช้แทน CAL)</label>
+      <select id="rblPos">
+        <option value="">-- ไม่ระบุ (ใช้ CAL) --</option>
+        <option value="upper">Upper half of coronal ⅓</option>
+        <option value="lower">Lower half of coronal ⅓</option>
+        <option value="middle">Middle ⅓ of root</option>
+        <option value="apical">Apical ⅓ of root</option>
+      </select>
+
+      <h3>Complexity-shifter (ตรง ≥ 1 ข้อ → Stage III/IV)</h3>
+      <div class="checkbox-group">
+        <label class="check-item"><input type="checkbox" id="cx1"><span>PD ≥ 6 mm</span></label>
+        <label class="check-item"><input type="checkbox" id="cx2"><span>Furcation involvement grade II, III</span></label>
+        <label class="check-item"><input type="checkbox" id="cx3"><span>Vertical bone loss ≥ 3 mm</span></label>
+        <label class="check-item"><input type="checkbox" id="cx4"><span>Perio tooth loss</span></label>
+        <label class="check-item"><input type="checkbox" id="cx5"><span>Ridge defect</span></label>
+      </div>
+
+      <h3>Rehabilitation-shifter (ตรง ≥ 1 ข้อ → Stage IV)</h3>
+      <div class="checkbox-group">
+        <label class="check-item"><input type="checkbox" id="rh1"><span>Perio. tooth loss ≥ 5</span></label>
+        <label class="check-item"><input type="checkbox" id="rh2"><span>คู่สบ &lt; 10 คู่</span></label>
+        <label class="check-item"><input type="checkbox" id="rh3"><span>2<sup>nd</sup> Occlusal trauma โยก ≥ 2°</span></label>
+        <label class="check-item"><input type="checkbox" id="rh4"><span>Bite collapse, drift, flare (Pathologic migration)</span></label>
+        <label class="check-item"><input type="checkbox" id="rh5"><span>Severe ridge defect</span></label>
+      </div>
+
+      <div class="divider"></div>
+      <h3>Grade — พิจารณาซี่ที่มี GREATEST LOSS</h3>
+      <label>มีประวัติ Periodontitis progression over 5 years หรือไม่?</label>
+      <select id="hasProgression" onchange="toggleGrade()">
+        <option value="no">ไม่มีประวัติ (ใช้ % Bone loss/Age)</option>
+        <option value="yes">มีประวัติ (ใช้ direct evidence)</option>
+      </select>
+
+      <div id="gradeDirect" style="display:none;">
+        <label>การสูญเสียในช่วง 5 ปี (mm)</label>
+        <input type="number" id="progLoss" step="0.1" placeholder="เช่น 1.5">
+        <span class="hint">No loss = A, &lt;2 mm = B, ≥2 mm = C</span>
+      </div>
+
+      <div id="gradeIndirect">
+        <label>% Bone loss</label>
+        <input type="number" id="boneLoss" step="0.1" placeholder="เช่น 50">
+        <label>อายุผู้ป่วย (ปี)</label>
+        <input type="number" id="age" step="1" placeholder="เช่น 25">
+        <span class="hint">Bone loss/Age: &lt;0.25 = A, 0.25-1 = B, &gt;1 = C</span>
+      </div>
+
+      <h3>Grade modifiers</h3>
+      <label>Smoking</label>
+      <select id="smoking">
+        <option value="no">ไม่สูบบุหรี่ (No upgrade)</option>
+        <option value="low">&lt; 10 มวน/วัน (Upgrade to B)</option>
+        <option value="high">≥ 10 มวน/วัน (Upgrade to C)</option>
+      </select>
+      <label>Diabetes</label>
+      <select id="diabetes">
+        <option value="no">ไม่เป็นเบาหวาน (No upgrade)</option>
+        <option value="low">HbA1c &lt; 7 (Upgrade to B)</option>
+        <option value="high">HbA1c ≥ 7 (Upgrade to C)</option>
+      </select>
+
+      <button class="btn" onclick="evalStep3()">วินิจฉัย Case P</button>
+      <div class="result" id="r3"></div>
+
+      <div class="remarks">
+        <b>Remarks for staging &amp; grading:</b><br>
+        • Don't have to match every cell of the grid<br>
+        • Don't forget "Clinician's judgement"
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== PANEL 2: AAP 1999 ========== -->
+  <div class="panel" id="panel1">
+    <div class="card">
+      <h2>AAP 1999 — Chronic Periodontitis Calculator</h2>
+      <label>จำนวนฟันที่มีในปาก (ไม่นับ 3<sup>rd</sup> molar)</label>
+      <input type="number" id="numTeeth" step="1" placeholder="เช่น 28" oninput="calcTotalSite()">
+      <p class="step-info">Total site = จำนวนฟัน × 6 = <span class="pct-display" id="totalSite">-</span></p>
+
+      <div class="divider"></div>
+      <h3>กรอกจำนวนตำแหน่ง (sites)</h3>
+      <label>CAL 1-2 mm (Mild)</label>
+      <input type="number" id="cal12" step="1" placeholder="0" oninput="calcAAP()">
+      <span class="hint">= <span class="pct-display" id="pct12">-</span></span>
+      <label>CAL 3-4 mm (Moderate)</label>
+      <input type="number" id="cal34" step="1" placeholder="0" oninput="calcAAP()">
+      <span class="hint">= <span class="pct-display" id="pct34">-</span></span>
+      <label>CAL ≥ 5 mm (Severe)</label>
+      <input type="number" id="cal5" step="1" placeholder="0" oninput="calcAAP()">
+      <span class="hint">= <span class="pct-display" id="pct5">-</span></span>
+
+      <p class="step-info">ผลรวม sites: <span class="pct-display" id="sumSites">-</span> / <span id="totalSite2">-</span></p>
+
+      <button class="btn" onclick="evalAAP()">วินิจฉัย Chronic Periodontitis</button>
+      <div class="result" id="rAAP"></div>
+    </div>
+
+    <div class="card">
+      <h2>AAP 1999 — Classification Reference</h2>
+      <h3>Gingivitis</h3>
+      <p class="step-info">• Dental-plaque induced = Perio<br>• Non-dental-plaque induced = ไม่ใช่ Perio (Oral diag เช่น Leukemia, Herpes)</p>
+      <h3>Chronic periodontitis</h3>
+      <p class="step-info">เกี่ยวกับ Local factor (Chronic plaque/calculus) — Extent + Severity (ใช้เครื่องคำนวณด้านบน)</p>
+      <h3>Aggressive periodontitis</h3>
+      <p class="step-info">• Localized: 1<sup>st</sup> Molar + Incisor ไม่พบที่อื่น หรือ ≤ 2 ซี่<br>• Generalized: 1<sup>st</sup> Molar + Incisor พบที่อื่น &gt; 3 ซี่</p>
+      <h3>Necrotizing periodontal disease</h3>
+      <p class="step-info">• NUG: รอยแผลจำกัดที่เหงือก<br>• NUP: มี Attachment loss, Bone loss<br>• NUS: รอยแผลที่ Vestibule, Palate</p>
+      <h3>Abscess of periodontium</h3>
+      <h3>Periodontitis associated with Endodontic lesion</h3>
+      <p class="step-info">• Periodontal-Endodontic lesions<br>• Endodontic-Periodontal lesion<br>• Combined lesion</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <b>Rachadol Thuephut, DDS</b><br>
+  School of Geriatric Oral Health<br>
+  Institute of Dentistry<br>
+  Suranaree University of Technology<br>
+  <span style="opacity:0.8;">This website is for personal use only. If you have any feedback, please contact <a href="mailto:rachadol.t@sut.ac.th">rachadol.t@sut.ac.th</a></span>
+</footer>
+
+<script>
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
+  document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
+}
+
+/* ===== THAI 2018 ===== */
+function evalStep1(){
+  const c11=document.getElementById('c11').checked;
+  const c12=document.getElementById('c12').checked;
+  const excl=['c13','c14','c15','c16','c17'].some(id=>document.getElementById(id).checked);
+  const r=document.getElementById('r1');
+  r.classList.add('show');
+  const isP = (c11||c12) && !excl;
+  if(isP){
+    r.innerHTML=`<h3>ผลการประเมิน</h3>
+      <div class="step-info">มี Condition ตรงตามที่กำหนด และไม่เข้าข้อยกเว้น</div>
+      <div class="dx-final">→ Suspect Case P (Periodontitis) — พิจารณา Extent, Stage, Grade</div>`;
+    document.getElementById('cardP').style.display='block';
+    document.getElementById('cardHG').style.display='none';
+  } else if((c11||c12) && excl){
+    r.innerHTML=`<h3>ผลการประเมิน</h3>
+      <div class="step-info">มี Condition ตรงตามที่กำหนด แต่เข้าข้อยกเว้น</div>
+      <div class="dx-final">→ ไม่ใช่ Case P — พิจารณา Case H / G</div>`;
+    document.getElementById('cardHG').style.display='block';
+    document.getElementById('cardP').style.display='none';
+  } else {
+    r.innerHTML=`<h3>ผลการประเมิน</h3>
+      <div class="step-info">ไม่มี Condition ตรงตามที่กำหนด</div>
+      <div class="dx-final">→ Suspect Case H หรือ Case G</div>`;
+    document.getElementById('cardHG').style.display='block';
+    document.getElementById('cardP').style.display='none';
+  }
+}
+
+function evalStep2(){
+  const bop=parseFloat(document.getElementById('bop').value);
+  const ps=document.querySelector('input[name="ps"]:checked');
+  const r=document.getElementById('r2');
+  r.classList.add('show');
+  if(isNaN(bop)){ r.innerHTML='<p class="error">กรุณากรอก %BOP</p>'; return; }
+  if(!ps){ r.innerHTML='<p class="error">กรุณาเลือกสภาพ Periodontium</p>'; return; }
+
+  let caseType, dxMain;
+  if(bop<10){ caseType='H'; dxMain='Clinical gingival health'; }
+  else if(bop<=30){ caseType='G'; dxMain='Localized dental plaque induced gingivitis'; }
+  else { caseType='G'; dxMain='Generalized dental plaque induced gingivitis'; }
+
+  const map={
+    'intact':'on an intact periodontium',
+    'reduced_non':'on a reduced periodontium in a non-periodontitis patient',
+    'stable':'on a reduced periodontium in a stable periodontitis patient',
+    'treated':'on a reduced periodontium in a successfully treated periodontitis patient'
+  };
+  const tail=map[ps.value];
+
+  let warn='';
+  if(caseType==='H' && ps.value==='treated') warn='<div class="info-box">หมายเหตุ: "stable periodontitis patient" มักใช้กับ Case H; "successfully treated" มักใช้กับ Case G — โปรดใช้ Clinician\'s judgement</div>';
+  if(caseType==='G' && ps.value==='stable') warn='<div class="info-box">หมายเหตุ: "successfully treated periodontitis patient" มักใช้กับ Case G — โปรดใช้ Clinician\'s judgement</div>';
+
+  r.innerHTML=`<h3>ผลการวินิจฉัย (Case ${caseType})</h3>
+    <div class="step-info">%BOP = ${bop}%</div>
+    ${warn}
+    <div class="dx-final">${dxMain} ${tail}</div>`;
+}
+
+function toggleGrade(){
+  const v=document.getElementById('hasProgression').value;
+  document.getElementById('gradeDirect').style.display = v==='yes'?'block':'none';
+  document.getElementById('gradeIndirect').style.display = v==='yes'?'none':'block';
+}
+
+function gradeOrder(g){ return {A:0,B:1,C:2}[g]; }
+function upper(a,b){ return gradeOrder(a)>=gradeOrder(b)?a:b; }
+
+function evalStep3(){
+  const r=document.getElementById('r3'); r.classList.add('show');
+
+  // Extent
+  const ext=parseFloat(document.getElementById('extentPct').value);
+  const mi=document.getElementById('molarIncisor').checked;
+  if(isNaN(ext)){ r.innerHTML='<p class="error">กรุณากรอก % of teeth with CAL</p>'; return; }
+  let extent;
+  if(mi) extent='Molar-incisor pattern';
+  else if(ext<30) extent='Localized';
+  else extent='Generalized';
+
+  // Stage
+  const cal=parseFloat(document.getElementById('stageCAL').value);
+  const rbl=document.getElementById('rblPos').value;
+  const cx=['cx1','cx2','cx3','cx4','cx5'].some(id=>document.getElementById(id).checked);
+  const rh=['rh1','rh2','rh3','rh4','rh5'].some(id=>document.getElementById(id).checked);
+
+  // Determine severe group (III/IV) vs (I/II)
+  let severeGroup;
+  if(rbl){
+    severeGroup = (rbl==='middle'||rbl==='apical');
+  } else {
+    if(isNaN(cal)){ r.innerHTML='<p class="error">กรุณากรอก CAL หรือเลือกตำแหน่ง RBL ของซี่ที่มี greatest loss</p>'; return; }
+    severeGroup = cal>=5;
+  }
+  if(cx) severeGroup=true; // complexity-shifter forces III/IV
+
+  let stage;
+  if(severeGroup){
+    stage = rh ? 'IV' : 'III';
+  } else {
+    // Stage I vs II
+    if(rbl){
+      stage = (rbl==='upper')?'I':(rbl==='lower'?'II':'I');
+    } else {
+      stage = (cal<=2)?'I':'II';
+    }
+  }
+
+  // Grade
+  const hasProg=document.getElementById('hasProgression').value;
+  let grade;
+  if(hasProg==='yes'){
+    const pl=parseFloat(document.getElementById('progLoss').value);
+    if(isNaN(pl)){ r.innerHTML='<p class="error">กรุณากรอกการสูญเสียในช่วง 5 ปี (mm)</p>'; return; }
+    if(pl===0) grade='A';
+    else if(pl<2) grade='B';
+    else grade='C';
+  } else {
+    const bl=parseFloat(document.getElementById('boneLoss').value);
+    const age=parseFloat(document.getElementById('age').value);
+    if(isNaN(bl)||isNaN(age)||age===0){ r.innerHTML='<p class="error">กรุณากรอก % Bone loss และอายุผู้ป่วย</p>'; return; }
+    const ratio=bl/age;
+    if(ratio<0.25) grade='A';
+    else if(ratio<=1) grade='B';
+    else grade='C';
+  }
+
+  // Grade modifiers
+  const sm=document.getElementById('smoking').value;
+  const db=document.getElementById('diabetes').value;
+  let baseGrade=grade;
+  if(sm==='low') grade=upper(grade,'B');
+  if(sm==='high') grade=upper(grade,'C');
+  if(db==='low') grade=upper(grade,'B');
+  if(db==='high') grade=upper(grade,'C');
+
+  let modNote='';
+  if(grade!==baseGrade) modNote=`<div class="step-info">Grade modifier: upgrade จาก ${baseGrade} → ${grade}</div>`;
+
+  const extentLabel = (extent==='Molar-incisor pattern')?'Molar-incisor pattern':extent;
+  const dx=`${extentLabel} periodontitis stage ${stage} grade ${grade}`;
+
+  r.innerHTML=`<h3>ผลการวินิจฉัย (Case P)</h3>
+    <div class="step-info">Extent: ${extent}${mi?'':' ('+ext+'%)'}</div>
+    <div class="step-info">Stage: ${stage} ${severeGroup?'(III/IV group'+(cx?' — มี Complexity-shifter':'')+')':'(I/II group)'}${rh?' — มี Rehabilitation-shifter → IV':''}</div>
+    <div class="step-info">Grade (base): ${baseGrade}</div>
+    ${modNote}
+    <div class="dx-final">${dx}</div>`;
+}
+
+/* ===== AAP 1999 ===== */
+function calcTotalSite(){
+  const t=parseInt(document.getElementById('numTeeth').value)||0;
+  const ts=t*6;
+  document.getElementById('totalSite').textContent = ts||'-';
+  document.getElementById('totalSite2').textContent = ts||'-';
+  calcAAP();
+}
+function calcAAP(){
+  const t=parseInt(document.getElementById('numTeeth').value)||0;
+  const ts=t*6;
+  const a=parseInt(document.getElementById('cal12').value)||0;
+  const b=parseInt(document.getElementById('cal34').value)||0;
+  const c=parseInt(document.getElementById('cal5').value)||0;
+  const sum=a+b+c;
+  document.getElementById('pct12').textContent = ts?((a/ts*100).toFixed(2)+'%'):'-';
+  document.getElementById('pct34').textContent = ts?((b/ts*100).toFixed(2)+'%'):'-';
+  document.getElementById('pct5').textContent  = ts?((c/ts*100).toFixed(2)+'%'):'-';
+  document.getElementById('sumSites').textContent = sum;
+}
+
+function evalAAP(){
+  const r=document.getElementById('rAAP'); r.classList.add('show');
+  const t=parseInt(document.getElementById('numTeeth').value)||0;
+  const ts=t*6;
+  const a=parseInt(document.getElementById('cal12').value)||0;
+  const b=parseInt(document.getElementById('cal34').value)||0;
+  const c=parseInt(document.getElementById('cal5').value)||0;
+  if(ts===0){ r.innerHTML='<p class="error">กรุณากรอกจำนวนฟัน</p>'; return; }
+  if(a+b+c!==ts){
+    r.innerHTML=`<p class="error">ผลรวม sites (${a+b+c}) ไม่เท่ากับ Total site (${ts}) — กรุณากรอกใหม่ให้ครบ 100%</p>`;
+    return;
+  }
+  const pA=a/ts*100, pB=b/ts*100, pC=c/ts*100;
+
+  // severity levels in order of severity: severe(C), moderate(B), mild(A)
+  // find highest severity that has any site
+  const levels=[
+    {name:'severe', pct:pC},
+    {name:'moderate', pct:pB},
+    {name:'mild', pct:pA}
+  ];
+  const present=levels.filter(l=>l.pct>0);
+  let dx;
+
+  if(present.length===0){ dx='No attachment loss detected'; }
+  else {
+    const top=present[0]; // most severe present
+    const topExtent = top.pct>=30?'Generalized':'Localized';
+
+    if(present.length===1){
+      dx=`${cap(topExtent)} ${top.name} chronic periodontitis`;
+    } else {
+      const second=present[1];
+      const secExtent = second.pct>=30?'Generalized':'Localized';
+
+      if(topExtent==='Generalized'){
+        // most severe is generalized -> diagnose by it alone
+        dx=`Generalized ${top.name} chronic periodontitis`;
+      } else {
+        // top is localized -> consider second
+        if(secExtent==='Generalized'){
+          // "With"
+          dx=`Generalized ${second.name} with Localized ${top.name} chronic periodontitis`;
+        } else {
+          // both localized -> combine extents
+          const combined=top.pct+second.pct;
+          // order by severity ascending for "to" (lower to higher)
+          const sevOrder={mild:0,moderate:1,severe:2};
+          const two=[top.name,second.name].sort((x,y)=>sevOrder[x]-sevOrder[y]);
+          if(combined>=30){
+            dx=`Generalized ${two[0]} to ${two[1]} chronic periodontitis`;
+          } else {
+            dx=`Localized ${two[0]} to ${two[1]} chronic periodontitis`;
+          }
+        }
+      }
+    }
+  }
+
+  r.innerHTML=`<h3>ผลการวินิจฉัย (AAP 1999)</h3>
+    <div class="step-info">CAL 1-2 mm (Mild): ${pA.toFixed(2)}%</div>
+    <div class="step-info">CAL 3-4 mm (Moderate): ${pB.toFixed(2)}%</div>
+    <div class="step-info">CAL ≥ 5 mm (Severe): ${pC.toFixed(2)}%</div>
+    <div class="dx-final">${dx}</div>`;
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
