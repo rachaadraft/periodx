@@ -9,7 +9,10 @@
 									background-color: white; /* Ensure the iframe has a white background */
 								}
 
-								
+								/* ขยายพื้นที่ด้านบนของ header บนมือถือ ให้หัวข้อเลื่อนลงมาไม่ซ้อนปุ่มออกจากระบบ */
+@media (max-width:600px){
+  header { padding-top:72px; }
+}
 							</style>
                         </head>
                         <body>
@@ -36,10 +39,20 @@
   header {
     background:linear-gradient(135deg,var(--primary-dark),var(--primary));
     color:#fff; padding:32px 20px; text-align:center;
-    box-shadow:var(--shadow);
+    box-shadow:var(--shadow); position:relative;
   }
   header h1 { font-size:1.8rem; font-weight:700; margin-bottom:6px; }
   header p { font-size:0.95rem; opacity:0.9; font-weight:300; }
+  .logout-btn {
+    position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.15);
+    color:#fff; border:1px solid rgba(255,255,255,0.4); padding:8px 16px;
+    border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:500; transition:.2s;
+  }
+  .logout-btn:hover { background:rgba(255,255,255,0.3); }
+  /* ขยายพื้นที่ด้านบนของ header บนมือถือ ให้หัวข้อเลื่อนลงมาไม่ซ้อนปุ่มออกจากระบบ */
+  @media (max-width:600px){
+    header { padding-top:72px; }
+  }
   .container { max-width:900px; margin:0 auto; padding:24px 16px 60px; }
   .tabs { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
   .tab {
@@ -60,7 +73,7 @@
   .card h3 { color:var(--primary-light); font-size:1.05rem; margin:16px 0 8px; font-weight:600;}
   label { display:block; margin:12px 0 6px; font-weight:500; font-size:0.95rem; }
   .hint { font-size:0.82rem; color:#888; font-weight:300; margin-top:2px;}
-  input[type=number], input[type=text], select {
+  input[type=number], input[type=text], input[type=password], select {
     width:100%; padding:11px 14px; border:2px solid var(--border);
     border-radius:10px; font-size:0.95rem; transition:.2s; background:#fff;
   }
@@ -109,10 +122,49 @@
   sup { font-size:0.65em; }
   .divider { height:1px; background:var(--border); margin:18px 0;}
   .info-box { background:#fff8e1; border:1px solid #ffe0a0; border-radius:10px; padding:12px; font-size:0.88rem; margin:10px 0; color:#7a5a00;}
+
+  /* ===== LOGIN ===== */
+  #loginScreen {
+    position:fixed; inset:0; z-index:1000;
+    background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .login-box {
+    background:#fff; border-radius:20px; padding:40px 32px; width:100%; max-width:380px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:center; animation:fade .4s;
+  }
+  .login-box h1 { color:var(--primary); font-size:1.4rem; margin-bottom:4px; font-weight:700;}
+  .login-box p { color:#888; font-size:0.88rem; margin-bottom:24px; font-weight:300;}
+  .login-box label { text-align:left; }
+  .login-error {
+    color:var(--primary); font-weight:600; font-size:0.88rem; margin-top:12px;
+    display:none;
+  }
+  .login-error.show { display:block; animation:fade .3s; }
+  #appWrapper { display:none; }
+  #appWrapper.show { display:block; }
 </style>
 </head>
 <body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>Periodontal Diagnosis Tool</h1>
+    <p>กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
+    <label>Username</label>
+    <input type="text" id="loginUser" placeholder="Username" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <label>Password</label>
+    <input type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="login-error" id="loginError">Username หรือ Password ไม่ถูกต้อง</div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="appWrapper">
 <header>
+  <button class="logout-btn" onclick="doLogout()">ออกจากระบบ</button>
   <h1>Periodontal Diagnosis Tool</h1>
   <p>เครื่องมือช่วยวินิจฉัยโรคปริทันต์ตามแนวทาง Thai Association of Periodontology 2018 &amp; AAP 1999</p>
 </header>
@@ -170,7 +222,7 @@
 
       <h3>Extent</h3>
       <label>% of teeth with CAL</label>
-      <input type="number" id="extentPct" step="0.1" placeholder="เช่น 20">
+      <input type="number" id="extentPct" step="0.1" placeholder="เช่น 35">
       <div class="checkbox-group">
         <label class="check-item"><input type="checkbox" id="molarIncisor"><span>พบ CAL เฉพาะ Molar และ/หรือ Incisor (Molar-incisor pattern)</span></label>
       </div>
@@ -304,8 +356,42 @@
   Suranaree University of Technology<br>
   <span style="opacity:0.8;">This website is for personal use only. If you have any feedback, please contact <a href="mailto:rachadol.t@sut.ac.th">rachadol.t@sut.ac.th</a></span>
 </footer>
+</div><!-- /appWrapper -->
 
 <script>
+/* ===== LOGIN ===== */
+const VALID_USER='periodx';
+const VALID_PASS='periosut';
+
+// helper ปลอดภัย: ถ้า sessionStorage ใช้ไม่ได้ จะไม่ทำให้โค้ดพัง
+function safeSet(k,v){ try{ sessionStorage.setItem(k,v); }catch(e){} }
+function safeGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function safeRemove(k){ try{ sessionStorage.removeItem(k); }catch(e){} }
+
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  if(u===VALID_USER && p===VALID_PASS){
+    safeSet('perioAuth','1');
+    showApp();
+  } else {
+    err.classList.add('show');
+    document.getElementById('loginPass').value='';
+  }
+}
+function showApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appWrapper').classList.add('show');
+}
+function doLogout(){
+  safeRemove('perioAuth');
+  location.reload();
+}
+// คงสถานะ login ระหว่าง session (ถ้า sessionStorage ใช้ได้)
+if(safeGet('perioAuth')==='1'){ showApp(); }
+
+/* ===== TABS ===== */
 function switchTab(i){
   document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));
   document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx===i));
@@ -497,8 +583,6 @@ function evalAAP(){
   }
   const pA=a/ts*100, pB=b/ts*100, pC=c/ts*100;
 
-  // severity levels in order of severity: severe(C), moderate(B), mild(A)
-  // find highest severity that has any site
   const levels=[
     {name:'severe', pct:pC},
     {name:'moderate', pct:pB},
@@ -509,7 +593,7 @@ function evalAAP(){
 
   if(present.length===0){ dx='No attachment loss detected'; }
   else {
-    const top=present[0]; // most severe present
+    const top=present[0];
     const topExtent = top.pct>=30?'Generalized':'Localized';
 
     if(present.length===1){
@@ -519,17 +603,12 @@ function evalAAP(){
       const secExtent = second.pct>=30?'Generalized':'Localized';
 
       if(topExtent==='Generalized'){
-        // most severe is generalized -> diagnose by it alone
         dx=`Generalized ${top.name} chronic periodontitis`;
       } else {
-        // top is localized -> consider second
         if(secExtent==='Generalized'){
-          // "With"
           dx=`Generalized ${second.name} with Localized ${top.name} chronic periodontitis`;
         } else {
-          // both localized -> combine extents
           const combined=top.pct+second.pct;
-          // order by severity ascending for "to" (lower to higher)
           const sevOrder={mild:0,moderate:1,severe:2};
           const two=[top.name,second.name].sort((x,y)=>sevOrder[x]-sevOrder[y]);
           if(combined>=30){
