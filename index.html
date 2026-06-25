@@ -37,8 +37,7 @@
   .tab {
     flex:1; min-width:160px; padding:14px 10px; border:none; cursor:pointer;
     background:var(--card); color:var(--primary); font-size:0.95rem; font-weight:600;
-    border-radius:12px; box-shadow:var(--shadow); transition:.2s;
-    border:2px solid transparent;
+    border-radius:12px; box-shadow:var(--shadow); transition:.2s; border:2px solid transparent;
   }
   .tab.active { background:var(--primary); color:#fff; }
   .tab:hover { border-color:var(--primary-light); }
@@ -63,13 +62,11 @@
   .checkbox-group { display:flex; flex-direction:column; gap:10px; margin-top:8px;}
   .check-item {
     display:flex; align-items:flex-start; gap:10px; padding:12px;
-    background:var(--bg); border-radius:10px; border:1px solid var(--border);
-    cursor:pointer; transition:.2s;
+    background:var(--bg); border-radius:10px; border:1px solid var(--border); cursor:pointer; transition:.2s;
   }
   .check-item:hover { border-color:var(--primary-light); }
   .check-item input { margin-top:4px; width:18px; height:18px; accent-color:var(--primary); cursor:pointer;}
   .check-item span { font-size:0.92rem; }
-  .check-item .th { font-size:0.76rem; color:#aaa; display:block; margin-top:2px; }
   .radio-group { display:flex; flex-direction:column; gap:8px; margin-top:8px;}
   .radio-item {
     display:flex; align-items:flex-start; gap:10px; padding:12px;
@@ -103,9 +100,7 @@
   .error { color:var(--primary); font-weight:600; }
   .remarks { font-size:0.85rem; color:#777; margin-top:14px; padding:12px; background:var(--bg); border-radius:10px;}
   .pct-display { font-weight:600; color:var(--primary); }
-  footer {
-    text-align:center; padding:30px 20px; background:var(--primary-dark); color:#fff; font-size:0.85rem; line-height:1.8;
-  }
+  footer { text-align:center; padding:30px 20px; background:var(--primary-dark); color:#fff; font-size:0.85rem; line-height:1.8; }
   footer a { color:#ffd0d0; }
   sup { font-size:0.65em; }
   .divider { height:1px; background:var(--border); margin:18px 0;}
@@ -143,20 +138,14 @@
   }
   .tooth-table input:disabled, .tooth-table select:disabled { background:#f0f0f0; border-color:#e0e0e0; }
   .arch-label { background:var(--primary-dark); color:#fff; font-weight:700; padding:6px; text-align:center; border-radius:8px; margin:10px 0 4px; font-size:0.85rem; }
-  .prog-badge {
-    display:inline-block; padding:3px 9px; border-radius:20px; font-size:0.78rem; font-weight:700;
-    white-space:nowrap;
-  }
+  .prog-badge { display:inline-block; padding:3px 9px; border-radius:20px; font-size:0.78rem; font-weight:700; white-space:nowrap; }
   .prog-F { background:#d4edda; color:#155724; }
   .prog-Q { background:#fff3cd; color:#856404; }
   .prog-U { background:#ffe0b2; color:#7a3e00; }
   .prog-H { background:#f8d7da; color:#721c24; }
   .prog-NA { background:#f0f0f0; color:#aaa; }
   .result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:14px; }
-  .result-tooth-card {
-    background:#fff; border-radius:10px; padding:10px 8px; text-align:center;
-    border:1.5px solid var(--border); box-shadow:0 2px 8px rgba(139,0,0,0.06);
-  }
+  .result-tooth-card { background:#fff; border-radius:10px; padding:10px 8px; text-align:center; border:1.5px solid var(--border); box-shadow:0 2px 8px rgba(139,0,0,0.06); }
   .result-tooth-card .tooth-num { font-weight:700; font-size:1rem; color:var(--primary-dark); }
   .result-tooth-card .tooth-prognosis { margin-top:4px; }
   .summary-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
@@ -214,7 +203,6 @@
       <button class="btn" onclick="evalStep1()">ประเมิน</button>
       <div class="result" id="r1"></div>
     </div>
-
     <div class="card" id="cardHG" style="display:none;">
       <h2>Case H หรือ Case G</h2>
       <label>%BOP (Bleeding on Probing)</label>
@@ -231,7 +219,6 @@
       <button class="btn" onclick="evalStep2()">วินิจฉัย Case H / G</button>
       <div class="result" id="r2"></div>
     </div>
-
     <div class="card" id="cardP" style="display:none;">
       <h2>Case P: Extent, Stage, Grade</h2>
       <div class="info-box">⚠️ หากไม่พบ True pocket ≥ 4 mm เมื่อ charting ให้กลับไปพิจารณา Case H/G (ยกเว้นเข้า Condition Interdental CAL ≥ 2 mm หรือ B/Li CAL ≥ 3 mm with PD ≥ 4 mm และไม่เข้าข้อยกเว้น)</div>
@@ -310,8 +297,6 @@
         • Don't forget "Clinician's judgement"
       </div>
     </div>
-
-    <!-- Patient-level Prognosis -->
     <div class="card" id="cardPatientPrognosis" style="display:none;">
       <h2>Patient-level Prognosis
         <span style="font-size:0.72rem;font-weight:400;color:#999;display:block;margin-top:2px;">(Thai Association of Periodontology: An Update in Periodontal Prognosis 2025)</span>
@@ -323,24 +308,20 @@
       <h3>Patient-level Prognosis Shifters</h3>
       <p class="section-note">หากมีปัจจัยเพิ่มเติมที่ส่งผลเสีย จะปรับ Prognosis ลด 1 ระดับ</p>
       <h3>Systemic Factors</h3>
-      <div id="smokingProgBlock">
-        <label>Smoking <span id="smokingProgNote" style="font-size:0.78rem;color:#aaa;"></span></label>
-        <div class="label-th">การสูบบุหรี่</div>
-        <select id="smokingProg">
-          <option value="no">ไม่สูบบุหรี่</option>
-          <option value="low">&lt; 10 มวน/วัน</option>
-          <option value="high">≥ 10 มวน/วัน</option>
-        </select>
-      </div>
-      <div id="diabetesProgBlock" style="margin-top:12px;">
-        <label>Diabetes / HbA1c <span id="diabetesProgNote" style="font-size:0.78rem;color:#aaa;"></span></label>
-        <div class="label-th">เบาหวาน / ระดับ HbA1c</div>
-        <select id="diabetesProg">
-          <option value="no">ไม่เป็นเบาหวาน</option>
-          <option value="low">HbA1c &lt; 7%</option>
-          <option value="high">HbA1c ≥ 7%</option>
-        </select>
-      </div>
+      <label>Smoking <span id="smokingProgNote" style="font-size:0.78rem;color:#aaa;"></span></label>
+      <div class="label-th">การสูบบุหรี่</div>
+      <select id="smokingProg">
+        <option value="no">ไม่สูบบุหรี่</option>
+        <option value="low">&lt; 10 มวน/วัน</option>
+        <option value="high">≥ 10 มวน/วัน</option>
+      </select>
+      <label style="margin-top:12px;">Diabetes / HbA1c <span id="diabetesProgNote" style="font-size:0.78rem;color:#aaa;"></span></label>
+      <div class="label-th">เบาหวาน / ระดับ HbA1c</div>
+      <select id="diabetesProg">
+        <option value="no">ไม่เป็นเบาหวาน</option>
+        <option value="low">HbA1c &lt; 7%</option>
+        <option value="high">HbA1c ≥ 7%</option>
+      </select>
       <label style="margin-top:14px;">Other systemic conditions</label>
       <div class="label-th">โรคทางระบบอื่น ๆ ที่ส่งผลต่อโรคปริทันต์ (Jepsen et al., 2018) ขึ้นกับระดับความรุนแรงและการควบคุมโรค</div>
       <select id="otherSystemic">
@@ -367,7 +348,7 @@
         <option value="no">ไม่มี</option>
         <option value="yes">มี</option>
       </select>
-      <div id="parafuncManageBlock" style="display:none; margin-top:10px;">
+      <div id="parafuncManageBlock" style="display:none;margin-top:10px;">
         <label>ได้รับการจัดการ / รักษาพฤติกรรมดังกล่าวแล้วหรือไม่?</label>
         <div class="label-th">การได้รับหรือไม่ได้รับการรักษาเกี่ยวกับการบดเคี้ยวที่เหมาะสม</div>
         <select id="parafuncManage">
@@ -520,21 +501,70 @@
   Suranaree University of Technology<br>
   <span style="opacity:0.8;">This website is for personal use only. If you have any feedback, please contact <a href="mailto:rachadol.t@sut.ac.th">rachadol.t@sut.ac.th</a></span>
 </footer>
-</div>
+</div><!-- /appWrapper -->
 
 <script>
-/* ===== LOGIN ===== */
+/* ===== TOOTH TABLE DATA ===== */
+var upperTeeth=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
+var lowerTeeth=[38,37,36,35,34,33,32,31,41,42,43,44,45,46,47,48];
+
+function hasFurcation(num){
+  var last=num%10;
+  return last>=4&&last<=8;
+}
+
+function buildRow(num){
+  var noFurc=!hasFurcation(num);
+  var furcCell=noFurc
+    ?'<input type="text" disabled value="-" style="width:52px;background:#f0f0f0;color:#bbb;text-align:center;">'
+    :'<select id="furc_'+num+'" onchange="calcRowProg('+num+')"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>';
+  return '<tr id="row_'+num+'">'
+    +'<td style="font-weight:700;color:var(--primary-dark);">'+num+'</td>'
+    +'<td><input type="number" id="mob_'+num+'" min="0" max="3" step="0.5" placeholder="0" style="width:60px;" oninput="calcRowProg('+num+')"></td>'
+    +'<td><input type="number" id="bl_'+num+'" min="0" max="100" step="1" placeholder="0" style="width:66px;" oninput="calcRowProg('+num+')"></td>'
+    +'<td><select id="vert_'+num+'" onchange="calcRowProg('+num+')"><option value="no">No</option><option value="yes">Yes</option></select></td>'
+    +'<td><input type="number" id="pd_'+num+'" min="1" max="20" step="1" placeholder="-" style="width:60px;" oninput="calcRowProg('+num+')"></td>'
+    +'<td>'+furcCell+'</td>'
+    +'<td><select id="local_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Likely controlled</option><option value="Q">May/may not be controlled</option><option value="U">Unlikely controlled</option></select></td>'
+    +'<td><select id="rest_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Restorable</option><option value="U">Compromised</option><option value="H">Unrestorable</option></select></td>'
+    +'<td><select id="endo_'+num+'" onchange="calcRowProg('+num+')"><option value="F">No</option><option value="Q">Endo-perio (no root damage)</option><option value="U">Endo-perio (root damage, consult)</option><option value="H">Endo-perio (root damage, extract)</option></select></td>'
+    +'<td id="prog_'+num+'"><span class="prog-badge prog-NA">—</span></td>'
+    +'</tr>';
+}
+
+/* สร้างตารางทันทีที่ DOM พร้อม ไม่รอ login */
+document.addEventListener('DOMContentLoaded', function(){
+  var ub=document.getElementById('upperBody');
+  var lb=document.getElementById('lowerBody');
+  if(ub && lb){
+    var uHTML='', lHTML='';
+    for(var i=0;i<upperTeeth.length;i++) uHTML+=buildRow(upperTeeth[i]);
+    for(var j=0;j<lowerTeeth.length;j++) lHTML+=buildRow(lowerTeeth[j]);
+    ub.innerHTML=uHTML;
+    lb.innerHTML=lHTML;
+  }
+  /* ตรวจ auth หลัง build table เสร็จ */
+  if(isLoggedIn){ showApp(); }
+});
+
+/* ===== LOGIN — ใช้ in-memory variable แทน sessionStorage ===== */
 var VALID_USER='periodx', VALID_PASS='periosut';
-function safeSet(k,v){try{sessionStorage.setItem(k,v);}catch(e){}}
-function safeGet(k){try{return sessionStorage.getItem(k);}catch(e){return null;}}
-function safeRemove(k){try{sessionStorage.removeItem(k);}catch(e){}}
+var isLoggedIn=false;
+
+/* พยายาม restore จาก sessionStorage แต่ถ้าไม่ได้ก็ไม่เป็นไร */
+(function(){
+  try{
+    if(sessionStorage.getItem('perioAuth')==='1') isLoggedIn=true;
+  }catch(e){}
+})();
 
 function doLogin(){
   var u=document.getElementById('loginUser').value.trim();
   var p=document.getElementById('loginPass').value;
   var err=document.getElementById('loginError');
   if(u===VALID_USER&&p===VALID_PASS){
-    safeSet('perioAuth','1');
+    isLoggedIn=true;
+    try{ sessionStorage.setItem('perioAuth','1'); }catch(e){}
     showApp();
   } else {
     err.classList.add('show');
@@ -545,41 +575,28 @@ function doLogin(){
 function showApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appWrapper').classList.add('show');
-  requestAnimationFrame(function(){
-    setTimeout(function(){
-      buildToothTables();
-    },0);
-  });
 }
 
-function doLogout(){safeRemove('perioAuth');location.reload();}
-
-document.addEventListener('DOMContentLoaded',function(){
-  if(safeGet('perioAuth')==='1'){ showApp(); }
-});
+function doLogout(){
+  isLoggedIn=false;
+  try{ sessionStorage.removeItem('perioAuth'); }catch(e){}
+  location.reload();
+}
 
 /* ===== TABS ===== */
 function switchTab(i){
-  document.querySelectorAll('.tab').forEach(function(t,idx){t.classList.toggle('active',idx===i);});
-  document.querySelectorAll('.panel').forEach(function(p,idx){p.classList.toggle('active',idx===i);});
-  if(i===2){
-    requestAnimationFrame(function(){
-      setTimeout(function(){ buildToothTables(); },0);
-    });
-  }
+  document.querySelectorAll('.tab').forEach(function(t,idx){ t.classList.toggle('active',idx===i); });
+  document.querySelectorAll('.panel').forEach(function(p,idx){ p.classList.toggle('active',idx===i); });
 }
 
 /* ===== GLOBAL STATE ===== */
-var lastDxType='';
-var lastStage='';
-var lastSmokingGrade='no';
-var lastDiabetesGrade='no';
+var lastDxType='', lastStage='', lastSmokingGrade='no', lastDiabetesGrade='no';
 
 /* ===== THAI 2018 ===== */
 function evalStep1(){
   var c11=document.getElementById('c11').checked;
   var c12=document.getElementById('c12').checked;
-  var excl=['c13','c14','c15','c16','c17'].some(function(id){return document.getElementById(id).checked;});
+  var excl=['c13','c14','c15','c16','c17'].some(function(id){ return document.getElementById(id).checked; });
   var r=document.getElementById('r1');
   r.classList.add('show');
   var isP=(c11||c12)&&!excl;
@@ -603,12 +620,12 @@ function evalStep2(){
   var ps=document.querySelector('input[name="ps"]:checked');
   var r=document.getElementById('r2');
   r.classList.add('show');
-  if(isNaN(bop)){r.innerHTML='<p class="error">กรุณากรอก %BOP</p>';return;}
-  if(!ps){r.innerHTML='<p class="error">กรุณาเลือกสภาพ Periodontium</p>';return;}
-  var caseType,dxMain;
-  if(bop<10){caseType='H';dxMain='Clinical gingival health';}
-  else if(bop<=30){caseType='G';dxMain='Localized dental plaque induced gingivitis';}
-  else{caseType='G';dxMain='Generalized dental plaque induced gingivitis';}
+  if(isNaN(bop)){ r.innerHTML='<p class="error">กรุณากรอก %BOP</p>'; return; }
+  if(!ps){ r.innerHTML='<p class="error">กรุณาเลือกสภาพ Periodontium</p>'; return; }
+  var caseType, dxMain;
+  if(bop<10){ caseType='H'; dxMain='Clinical gingival health'; }
+  else if(bop<=30){ caseType='G'; dxMain='Localized dental plaque induced gingivitis'; }
+  else{ caseType='G'; dxMain='Generalized dental plaque induced gingivitis'; }
   var map={'intact':'on an intact periodontium','reduced_non':'on a reduced periodontium in a non-periodontitis patient','stable':'on a reduced periodontium in a stable periodontitis patient','treated':'on a reduced periodontium in a successfully treated periodontitis patient'};
   var tail=map[ps.value];
   var warn='';
@@ -626,34 +643,34 @@ function toggleGrade(){
   document.getElementById('gradeDirect').style.display=v==='yes'?'block':'none';
   document.getElementById('gradeIndirect').style.display=v==='yes'?'none':'block';
 }
-function gradeOrder(g){return{A:0,B:1,C:2}[g];}
-function upper(a,b){return gradeOrder(a)>=gradeOrder(b)?a:b;}
+function gradeOrder(g){ return {A:0,B:1,C:2}[g]; }
+function upper(a,b){ return gradeOrder(a)>=gradeOrder(b)?a:b; }
 
 function evalStep3(){
   var r=document.getElementById('r3'); r.classList.add('show');
   var ext=parseFloat(document.getElementById('extentPct').value);
   var mi=document.getElementById('molarIncisor').checked;
-  if(isNaN(ext)){r.innerHTML='<p class="error">กรุณากรอก % of teeth with CAL</p>';return;}
+  if(isNaN(ext)){ r.innerHTML='<p class="error">กรุณากรอก % of teeth with CAL</p>'; return; }
   var extent;
   if(mi) extent='Molar-incisor pattern';
   else if(ext<30) extent='Localized';
   else extent='Generalized';
   var cal=parseFloat(document.getElementById('stageCAL').value);
   var rbl=document.getElementById('rblPos').value;
-  var cx=['cx1','cx2','cx3','cx4','cx5'].some(function(id){return document.getElementById(id).checked;});
-  var rh=['rh1','rh2','rh3','rh4','rh5'].some(function(id){return document.getElementById(id).checked;});
+  var cx=['cx1','cx2','cx3','cx4','cx5'].some(function(id){ return document.getElementById(id).checked; });
+  var rh=['rh1','rh2','rh3','rh4','rh5'].some(function(id){ return document.getElementById(id).checked; });
   var severeGroup;
-  if(rbl){severeGroup=(rbl==='middle'||rbl==='apical');}
+  if(rbl){ severeGroup=(rbl==='middle'||rbl==='apical'); }
   else{
-    if(isNaN(cal)){r.innerHTML='<p class="error">กรุณากรอก CAL หรือเลือกตำแหน่ง RBL</p>';return;}
+    if(isNaN(cal)){ r.innerHTML='<p class="error">กรุณากรอก CAL หรือเลือกตำแหน่ง RBL</p>'; return; }
     severeGroup=cal>=5;
   }
   if(cx) severeGroup=true;
   var stage;
-  if(severeGroup){stage=rh?'IV':'III';}
+  if(severeGroup){ stage=rh?'IV':'III'; }
   else{
-    if(rbl){stage=(rbl==='upper')?'I':'II';}
-    else{stage=(cal<=2)?'I':'II';}
+    if(rbl){ stage=(rbl==='upper')?'I':'II'; }
+    else{ stage=(cal<=2)?'I':'II'; }
   }
   var sm=document.getElementById('smoking').value;
   var db=document.getElementById('diabetes').value;
@@ -662,12 +679,12 @@ function evalStep3(){
   var grade;
   if(hasProg==='yes'){
     var pl=parseFloat(document.getElementById('progLoss').value);
-    if(isNaN(pl)){r.innerHTML='<p class="error">กรุณากรอกการสูญเสียในช่วง 5 ปี</p>';return;}
+    if(isNaN(pl)){ r.innerHTML='<p class="error">กรุณากรอกการสูญเสียในช่วง 5 ปี</p>'; return; }
     grade=pl===0?'A':pl<2?'B':'C';
   } else {
     var bl=parseFloat(document.getElementById('boneLoss').value);
     var age=parseFloat(document.getElementById('age').value);
-    if(isNaN(bl)||isNaN(age)||age===0){r.innerHTML='<p class="error">กรุณากรอก % Bone loss และอายุ</p>';return;}
+    if(isNaN(bl)||isNaN(age)||age===0){ r.innerHTML='<p class="error">กรุณากรอก % Bone loss และอายุ</p>'; return; }
     var ratio=bl/age;
     grade=ratio<0.25?'A':ratio<=1?'B':'C';
   }
@@ -701,10 +718,10 @@ function toggleParafuncManage(){
 
 function evalPatientPrognosis(){
   var r=document.getElementById('rPatientProg'); r.classList.add('show');
-  if(!lastDxType){r.innerHTML='<p class="error">กรุณาทำการวินิจฉัยก่อน</p>';return;}
+  if(!lastDxType){ r.innerHTML='<p class="error">กรุณาทำการวินิจฉัยก่อน</p>'; return; }
   var progLevels=['Good','Fair','Poor'];
   var basePrognosis;
-  if(lastDxType==='H'||lastDxType==='G'){basePrognosis='Good';}
+  if(lastDxType==='H'||lastDxType==='G'){ basePrognosis='Good'; }
   else{
     if(lastStage==='MI'||lastStage==='IV') basePrognosis='Poor';
     else if(lastStage==='III') basePrognosis='Fair';
@@ -721,14 +738,14 @@ function evalPatientPrognosis(){
   var teeth=document.getElementById('remainTeeth').value;
   var otherOcc=document.getElementById('otherOcclusal').value;
   var shiftCount=0;
-  if(smoke==='high'){shiftCount++;shiftReasons.push('Smoking ≥ 10 มวน/วัน');}
-  if(diab==='high'){shiftCount++;shiftReasons.push('HbA1c ≥ 7.0% ในผู้ป่วยเบาหวาน');}
-  if(otherSys==='yes'){shiftCount++;shiftReasons.push('มีโรคทางระบบอื่น ๆ ที่ส่งผลต่อโรคปริทันต์');}
-  if(oh==='poor'){shiftCount++;shiftReasons.push('Oral hygiene ไม่ดี / plaque control ไม่ดี');}
-  if(maint==='poor'){shiftCount++;shiftReasons.push('Periodontal maintenance ไม่สม่ำเสมอ');}
-  if(para==='yes'&&paraManage==='no'){shiftCount++;shiftReasons.push('มี Parafunctional habits และยังไม่ได้รับการจัดการ');}
-  if(teeth==='less'){shiftCount++;shiftReasons.push('ฟันเหลือน้อยกว่า 20 ซี่ / คู่สบน้อยกว่า 10 คู่');}
-  if(otherOcc==='yes'){shiftCount++;shiftReasons.push('มีปัญหาด้านการสบฟันอื่น ๆ');}
+  if(smoke==='high'){ shiftCount++; shiftReasons.push('Smoking ≥ 10 มวน/วัน'); }
+  if(diab==='high'){ shiftCount++; shiftReasons.push('HbA1c ≥ 7.0% ในผู้ป่วยเบาหวาน'); }
+  if(otherSys==='yes'){ shiftCount++; shiftReasons.push('มีโรคทางระบบอื่น ๆ ที่ส่งผลต่อโรคปริทันต์'); }
+  if(oh==='poor'){ shiftCount++; shiftReasons.push('Oral hygiene ไม่ดี / plaque control ไม่ดี'); }
+  if(maint==='poor'){ shiftCount++; shiftReasons.push('Periodontal maintenance ไม่สม่ำเสมอ'); }
+  if(para==='yes'&&paraManage==='no'){ shiftCount++; shiftReasons.push('มี Parafunctional habits และยังไม่ได้รับการจัดการ'); }
+  if(teeth==='less'){ shiftCount++; shiftReasons.push('ฟันเหลือน้อยกว่า 20 ซี่ / คู่สบน้อยกว่า 10 คู่'); }
+  if(otherOcc==='yes'){ shiftCount++; shiftReasons.push('มีปัญหาด้านการสบฟันอื่น ๆ'); }
   var finalPrognosis=basePrognosis;
   if(shiftCount>0){
     var idx=progLevels.indexOf(basePrognosis);
@@ -737,7 +754,9 @@ function evalPatientPrognosis(){
   var descMap={Good:'ผู้ป่วยมีสภาพฟันและเนื้อเยื่อปริทันต์อยู่ในสภาพดี สามารถคงไว้เพื่อการใช้งานได้ และโอกาสลุกลามของโรคปริทันต์อยู่ในระดับต่ำ',Fair:'ผู้ป่วยมีปัจจัยที่อาจส่งผลต่อการคงสภาพของฟันและเนื้อเยื่อปริทันต์ แต่สามารถควบคุมได้ โอกาสลุกลามของโรคปริทันต์อยู่ในระดับปานกลาง',Poor:'ผู้ป่วยมีปัจจัยที่ส่งผลต่อการคงสภาพของฟันและเนื้อเยื่อปริทันต์ ซึ่งอาจไม่สามารถควบคุมได้ โอกาสลุกลามของโรคปริทันต์อยู่ในระดับสูง'};
   var colorMap={Good:'#155724',Fair:'#856404',Poor:'#721c24'};
   var bgMap={Good:'#d4edda',Fair:'#fff3cd',Poor:'#f8d7da'};
-  var shiftNote=shiftCount>0?'<div class="step-info">ปรับลด 1 ระดับจาก <b>'+basePrognosis+'</b> → <b>'+finalPrognosis+'</b> เนื่องจาก:<br>'+shiftReasons.map(function(s){return '• '+s;}).join('<br>')+'</div>':'<div class="step-info">ไม่มีปัจจัยที่ต้องปรับระดับ (Prognosis คงระดับเดิม)</div>';
+  var shiftNote=shiftCount>0
+    ?'<div class="step-info">ปรับลด 1 ระดับจาก <b>'+basePrognosis+'</b> → <b>'+finalPrognosis+'</b> เนื่องจาก:<br>'+shiftReasons.map(function(s){ return '• '+s; }).join('<br>')+'</div>'
+    :'<div class="step-info">ไม่มีปัจจัยที่ต้องปรับระดับ (Prognosis คงระดับเดิม)</div>';
   var dxText=document.getElementById('dxForPrognosis').innerHTML;
   r.innerHTML='<h3>ผลการประเมิน Patient-level Prognosis</h3><div class="step-info">'+dxText+'</div>'+shiftNote+'<div class="prognosis-box" style="border-left-color:'+colorMap[finalPrognosis]+';background:'+bgMap[finalPrognosis]+'20;"><span style="color:'+colorMap[finalPrognosis]+';font-size:1.3rem;">Patient-level Prognosis: '+finalPrognosis+'</span><div class="prognosis-desc">'+descMap[finalPrognosis]+'</div></div>';
 }
@@ -768,83 +787,39 @@ function evalAAP(){
   var a=parseInt(document.getElementById('cal12').value)||0;
   var b=parseInt(document.getElementById('cal34').value)||0;
   var c=parseInt(document.getElementById('cal5').value)||0;
-  if(ts===0){r.innerHTML='<p class="error">กรุณากรอกจำนวนฟัน</p>';return;}
-  if(a+b+c!==ts){r.innerHTML='<p class="error">ผลรวม sites ('+(a+b+c)+') ไม่เท่ากับ Total site ('+ts+')</p>';return;}
-  var pA=a/ts*100,pB=b/ts*100,pC=c/ts*100;
+  if(ts===0){ r.innerHTML='<p class="error">กรุณากรอกจำนวนฟัน</p>'; return; }
+  if(a+b+c!==ts){ r.innerHTML='<p class="error">ผลรวม sites ('+(a+b+c)+') ไม่เท่ากับ Total site ('+ts+')</p>'; return; }
+  var pA=a/ts*100, pB=b/ts*100, pC=c/ts*100;
   var levels=[{name:'severe',pct:pC},{name:'moderate',pct:pB},{name:'mild',pct:pA}];
-  var present=levels.filter(function(l){return l.pct>0;});
+  var present=levels.filter(function(l){ return l.pct>0; });
   var dx;
-  if(present.length===0){dx='No attachment loss detected';}
+  if(present.length===0){ dx='No attachment loss detected'; }
   else{
     var top=present[0];
     var topExtent=top.pct>=30?'Generalized':'Localized';
-    if(present.length===1){dx=cap(topExtent)+' '+top.name+' chronic periodontitis';}
+    if(present.length===1){ dx=cap(topExtent)+' '+top.name+' chronic periodontitis'; }
     else{
       var second=present[1];
       var secExtent=second.pct>=30?'Generalized':'Localized';
-      if(topExtent==='Generalized'){dx='Generalized '+top.name+' chronic periodontitis';}
-      else if(secExtent==='Generalized'){dx='Generalized '+second.name+' with Localized '+top.name+' chronic periodontitis';}
+      if(topExtent==='Generalized'){ dx='Generalized '+top.name+' chronic periodontitis'; }
+      else if(secExtent==='Generalized'){ dx='Generalized '+second.name+' with Localized '+top.name+' chronic periodontitis'; }
       else{
         var combined=top.pct+second.pct;
         var sevOrder={mild:0,moderate:1,severe:2};
-        var two=[top.name,second.name].sort(function(x,y){return sevOrder[x]-sevOrder[y];});
+        var two=[top.name,second.name].sort(function(x,y){ return sevOrder[x]-sevOrder[y]; });
         dx=combined>=30?'Generalized '+two[0]+' to '+two[1]+' chronic periodontitis':'Localized '+two[0]+' to '+two[1]+' chronic periodontitis';
       }
     }
   }
   r.innerHTML='<h3>ผลการวินิจฉัย (AAP 1999)</h3><div class="step-info">CAL 1-2 mm (Mild): '+pA.toFixed(2)+'%</div><div class="step-info">CAL 3-4 mm (Moderate): '+pB.toFixed(2)+'%</div><div class="step-info">CAL ≥ 5 mm (Severe): '+pC.toFixed(2)+'%</div><div class="dx-final">'+dx+'</div>';
 }
-function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
 /* ===== TOOTH-LEVEL PROGNOSIS ===== */
-var upperTeeth=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
-var lowerTeeth=[38,37,36,35,34,33,32,31,41,42,43,44,45,46,47,48];
-
-function hasFurcation(num){
-  var last=num%10;
-  return last>=4&&last<=8;
-}
-
-function buildRow(num){
-  var noFurc=!hasFurcation(num);
-  /* ===== จุดที่แก้ไข: เปลี่ยน value="N/A" เป็น value="-" ===== */
-  var furcCell=noFurc
-    ?'<input type="text" disabled value="-" style="width:52px;background:#f0f0f0;color:#bbb;text-align:center;">'
-    :'<select id="furc_'+num+'" onchange="calcRowProg('+num+')"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>';
-  return '<tr id="row_'+num+'">'
-    +'<td style="font-weight:700;color:var(--primary-dark);">'+num+'</td>'
-    +'<td><input type="number" id="mob_'+num+'" min="0" max="3" step="0.5" placeholder="0" style="width:60px;" oninput="calcRowProg('+num+')"></td>'
-    +'<td><input type="number" id="bl_'+num+'" min="0" max="100" step="1" placeholder="0" style="width:66px;" oninput="calcRowProg('+num+')"></td>'
-    +'<td><select id="vert_'+num+'" onchange="calcRowProg('+num+')"><option value="no">No</option><option value="yes">Yes</option></select></td>'
-    +'<td><input type="number" id="pd_'+num+'" min="1" max="20" step="1" placeholder="-" style="width:60px;" oninput="calcRowProg('+num+')"></td>'
-    +'<td>'+furcCell+'</td>'
-    +'<td><select id="local_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Likely controlled</option><option value="Q">May/may not be controlled</option><option value="U">Unlikely controlled</option></select></td>'
-    +'<td><select id="rest_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Restorable</option><option value="U">Compromised</option><option value="H">Unrestorable</option></select></td>'
-    +'<td><select id="endo_'+num+'" onchange="calcRowProg('+num+')"><option value="F">No</option><option value="Q">Endo-perio (no root damage)</option><option value="U">Endo-perio (root damage, consult)</option><option value="H">Endo-perio (root damage, extract)</option></select></td>'
-    +'<td id="prog_'+num+'"><span class="prog-badge prog-NA">—</span></td>'
-    +'</tr>';
-}
-
-function buildToothTables(){
-  var ub=document.getElementById('upperBody');
-  var lb=document.getElementById('lowerBody');
-  if(!ub||!lb) return;
-  if(ub.children.length>0&&lb.children.length>0) return;
-  var upperHTML='';
-  for(var i=0;i<upperTeeth.length;i++) upperHTML+=buildRow(upperTeeth[i]);
-  var lowerHTML='';
-  for(var j=0;j<lowerTeeth.length;j++) lowerHTML+=buildRow(lowerTeeth[j]);
-  ub.innerHTML=upperHTML;
-  lb.innerHTML=lowerHTML;
-}
-
-function rankScore(r){
-  var map={F:0,Q:1,U:2,H:3};
-  return map[r]!==undefined?map[r]:0;
-}
+function rankScore(r){ var map={F:0,Q:1,U:2,H:3}; return map[r]!==undefined?map[r]:0; }
 function worstRank(){
   var args=Array.prototype.slice.call(arguments);
-  return args.reduce(function(a,b){return rankScore(a)>=rankScore(b)?a:b;});
+  return args.reduce(function(a,b){ return rankScore(a)>=rankScore(b)?a:b; });
 }
 
 function getToothProg(num){
@@ -876,7 +851,7 @@ function getToothProg(num){
   if(mobR==='H') return 'H';
   var blR='F';
   if(bl>=100) blR='H';
-  else if(bl>66){blR=vert==='yes'?'Q':'U';}
+  else if(bl>66){ blR=vert==='yes'?'Q':'U'; }
   else if(bl>=33) blR='Q';
   if(blR==='H') return 'H';
   var pdR='F';
@@ -897,9 +872,9 @@ function calcRowProg(num){
   var prog=getToothProg(num);
   var cell=document.getElementById('prog_'+num);
   if(!cell) return;
-  if(prog===null){cell.innerHTML='<span class="prog-badge prog-NA">—</span>';return;}
   var labels={F:'Favorable',Q:'Questionable',U:'Unfavorable',H:'Hopeless'};
   var cls={F:'prog-F',Q:'prog-Q',U:'prog-U',H:'prog-H'};
+  if(prog===null){ cell.innerHTML='<span class="prog-badge prog-NA">—</span>'; return; }
   cell.innerHTML='<span class="prog-badge '+cls[prog]+'">'+labels[prog]+'</span>';
 }
 
@@ -917,7 +892,7 @@ function evalToothPrognosis(){
       if(prog) evaluated.push({num:num,prog:prog});
     }
   }
-  if(evaluated.length===0){r.innerHTML='<p class="error">กรุณากรอกข้อมูลอย่างน้อย 1 ซี่ (Probing Depth จำเป็นต้องกรอก)</p>';return;}
+  if(evaluated.length===0){ r.innerHTML='<p class="error">กรุณากรอกข้อมูลอย่างน้อย 1 ซี่ (Probing Depth จำเป็นต้องกรอก)</p>'; return; }
   var summary={F:0,Q:0,U:0,H:0};
   for(var j=0;j<evaluated.length;j++){
     var p=evaluated[j].prog;
@@ -927,8 +902,7 @@ function evalToothPrognosis(){
   for(var k=0;k<evaluated.length;k++){
     cards+='<div class="result-tooth-card"><div class="tooth-num">'+evaluated[k].num+'</div><div class="tooth-prognosis"><span class="prog-badge '+cls[evaluated[k].prog]+'">'+labels[evaluated[k].prog]+'</span></div></div>';
   }
-  var chips='';
-  var order=['F','Q','U','H'];
+  var chips=''; var order=['F','Q','U','H'];
   for(var m=0;m<order.length;m++){
     var key=order[m];
     if(summary[key]>0) chips+='<span class="summary-chip '+cls[key]+'">'+labels[key]+': '+summary[key]+' ซี่</span>';
