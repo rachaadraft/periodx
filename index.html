@@ -144,6 +144,17 @@
   .prog-U { background:#ffe0b2; color:#7a3e00; }
   .prog-H { background:#f8d7da; color:#721c24; }
   .prog-NA { background:#f0f0f0; color:#aaa; }
+  /* Fixed-width prognosis cell */
+  .tooth-table td.prog-cell {
+    width:110px;
+    min-width:110px;
+    max-width:110px;
+  }
+  .tooth-table th.prog-th {
+    width:110px;
+    min-width:110px;
+    max-width:110px;
+  }
   .result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin-top:14px; }
   .result-tooth-card { background:#fff; border-radius:10px; padding:10px 8px; text-align:center; border:1.5px solid var(--border); box-shadow:0 2px 8px rgba(139,0,0,0.06); }
   .result-tooth-card .tooth-num { font-weight:700; font-size:1rem; color:var(--primary-dark); }
@@ -153,7 +164,6 @@
 </style>
 </head>
 <body>
-
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
@@ -167,7 +177,6 @@
     <div class="login-error" id="loginError">Username หรือ Password ไม่ถูกต้อง</div>
   </div>
 </div>
-
 <!-- APP -->
 <div id="appWrapper">
 <header>
@@ -175,14 +184,12 @@
   <h1>Periodontal Diagnosis Tool</h1>
   <p>เครื่องมือช่วยวินิจฉัยโรคปริทันต์ตามแนวทาง Thai Association of Periodontology 2018 &amp; AAP 1999</p>
 </header>
-
 <div class="container">
   <div class="tabs">
     <button class="tab active" onclick="switchTab(0)">Thai Periodontology 2018</button>
     <button class="tab" onclick="switchTab(1)">AAP 1999 Classification</button>
-    <button class="tab" onclick="switchTab(2)">Tooth-level Prognosis</button>
+    <button class="tab" onclick="switchTab(2)">Tooth-level Prognosis 2025</button>
   </div>
-
   <!-- PANEL 0 -->
   <div class="panel active" id="panel0">
     <div class="card">
@@ -357,8 +364,8 @@
         </select>
       </div>
       <h3>Occlusal Stability</h3>
-      <label>จำนวนฟันที่เหลือ (ไม่นับรากเทียม)</label>
-      <div class="label-th">ฟันเหลือน้อยกว่า 20 ซี่ (10 คู่สบ) นับรวมรากเทียม</div>
+      <label>จำนวนฟันที่เหลือ</label>
+      <div class="label-th">พิจารณาจำนวนฟันเหลือน้อยกว่า 20 ซี่ (10 คู่สบ) โดยนับรวมรากเทียม</div>
       <select id="remainTeeth">
         <option value="enough">≥ 20 ซี่ หรือ ≥ 10 คู่สบ (รวมรากเทียม)</option>
         <option value="less">น้อยกว่า 20 ซี่ / น้อยกว่า 10 คู่สบ</option>
@@ -374,7 +381,6 @@
       <div class="result" id="rPatientProg"></div>
     </div>
   </div>
-
   <!-- PANEL 1: AAP 1999 -->
   <div class="panel" id="panel1">
     <div class="card">
@@ -412,7 +418,6 @@
       <p class="step-info">• Periodontal-Endodontic lesions<br>• Endodontic-Periodontal lesion<br>• Combined lesion</p>
     </div>
   </div>
-
   <!-- PANEL 2: TOOTH-LEVEL PROGNOSIS -->
   <div class="panel" id="panel2">
     <div class="card">
@@ -457,7 +462,7 @@
               <th>Local<br>factors</th>
               <th>Restora-<br>bility</th>
               <th>Endo-<br>Perio</th>
-              <th>Prognosis</th>
+              <th class="prog-th">Prognosis</th>
             </tr>
           </thead>
           <tbody id="upperBody"></tbody>
@@ -477,7 +482,7 @@
               <th>Local<br>factors</th>
               <th>Restora-<br>bility</th>
               <th>Endo-<br>Perio</th>
-              <th>Prognosis</th>
+              <th class="prog-th">Prognosis</th>
             </tr>
           </thead>
           <tbody id="lowerBody"></tbody>
@@ -492,7 +497,6 @@
     </div>
   </div>
 </div>
-
 <footer>
   <b>Rachadol Thuephut, DDS</b><br>
   School of Geriatric Oral Health<br>
@@ -501,27 +505,16 @@
   <span style="opacity:0.8;">This website is for personal use only. If you have any feedback, please contact <a href="mailto:rachadol.t@sut.ac.th">rachadol.t@sut.ac.th</a></span>
 </footer>
 </div>
-
 <script>
 /* ===== TOOTH TABLE DATA ===== */
 var upperTeeth=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
 var lowerTeeth=[38,37,36,35,34,33,32,31,41,42,43,44,45,46,47,48];
-
-/* ===== แก้ไขจุดที่ 1: hasFurcation() ===== */
-/* ปิด Furcation สำหรับ:
-   - ซี่ X1, X2, X3 (ฟันหน้า Incisor-Canine)
-   - ซี่ 34, 35 (Lower left premolar)
-   - ซี่ 44, 45 (Lower right premolar)
-   เปิดใช้ได้สำหรับ: 16,17,18,26,27,28 (Upper molar)
-                     14,15,24,25 (Upper premolar)
-                     36,37,38,46,47,48 (Lower molar) */
 function hasFurcation(num){
   var noFurcList=[34,35,44,45];
   if(noFurcList.indexOf(num)!==-1) return false;
   var last=num%10;
   return last>=4&&last<=8;
 }
-
 /* ===== clamp helpers ===== */
 function clampInt(el,min,max){
   var v=parseInt(el.value);
@@ -535,7 +528,6 @@ function clampFloat(el,min,max){
   if(v<min) el.value=min;
   if(v>max) el.value=max;
 }
-
 function buildRow(num){
   var noFurc=!hasFurcation(num);
   var furcCell=noFurc
@@ -557,10 +549,9 @@ function buildRow(num){
     +'<td><select id="local_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Likely controlled</option><option value="Q">May/may not be controlled</option><option value="U">Unlikely controlled</option></select></td>'
     +'<td><select id="rest_'+num+'" onchange="calcRowProg('+num+')"><option value="F">Restorable</option><option value="U">Compromised</option><option value="H">Unrestorable</option></select></td>'
     +'<td><select id="endo_'+num+'" onchange="calcRowProg('+num+')"><option value="F">No</option><option value="Q">Endo-perio (no root damage)</option><option value="U">Endo-perio (root damage, consult)</option><option value="H">Endo-perio (root damage, extract)</option></select></td>'
-    +'<td id="prog_'+num+'"><span class="prog-badge prog-NA">—</span></td>'
+    +'<td class="prog-cell" id="prog_'+num+'"><span class="prog-badge prog-NA">—</span></td>'
     +'</tr>';
 }
-
 /* สร้างตารางทันทีที่ DOM พร้อม */
 document.addEventListener('DOMContentLoaded',function(){
   var ub=document.getElementById('upperBody');
@@ -574,14 +565,12 @@ document.addEventListener('DOMContentLoaded',function(){
   }
   if(isLoggedIn){ showApp(); }
 });
-
 /* ===== LOGIN ===== */
 var VALID_USER='periodx', VALID_PASS='periosut';
 var isLoggedIn=false;
 (function(){
   try{ if(sessionStorage.getItem('perioAuth')==='1') isLoggedIn=true; }catch(e){}
 })();
-
 function doLogin(){
   var u=document.getElementById('loginUser').value.trim();
   var p=document.getElementById('loginPass').value;
@@ -604,16 +593,13 @@ function doLogout(){
   try{ sessionStorage.removeItem('perioAuth'); }catch(e){}
   location.reload();
 }
-
 /* ===== TABS ===== */
 function switchTab(i){
   document.querySelectorAll('.tab').forEach(function(t,idx){ t.classList.toggle('active',idx===i); });
   document.querySelectorAll('.panel').forEach(function(p,idx){ p.classList.toggle('active',idx===i); });
 }
-
 /* ===== GLOBAL STATE ===== */
 var lastDxType='',lastStage='',lastSmokingGrade='no',lastDiabetesGrade='no';
-
 /* ===== THAI 2018 ===== */
 function evalStep1(){
   var c11=document.getElementById('c11').checked;
@@ -635,7 +621,6 @@ function evalStep1(){
     document.getElementById('cardP').style.display='none';
   }
 }
-
 function evalStep2(){
   var bop=parseFloat(document.getElementById('bop').value);
   var ps=document.querySelector('input[name="ps"]:checked');
@@ -656,7 +641,6 @@ function evalStep2(){
   r.innerHTML='<h3>ผลการวินิจฉัย (Case '+caseType+')</h3><div class="step-info">%BOP = '+bop+'%</div>'+warn+'<div class="dx-final">'+fullDx+'</div>';
   document.getElementById('cardPatientPrognosis').style.display='block';
 }
-
 function toggleGrade(){
   var v=document.getElementById('hasProgression').value;
   document.getElementById('gradeDirect').style.display=v==='yes'?'block':'none';
@@ -664,7 +648,6 @@ function toggleGrade(){
 }
 function gradeOrder(g){ return {A:0,B:1,C:2}[g]; }
 function upper(a,b){ return gradeOrder(a)>=gradeOrder(b)?a:b; }
-
 function evalStep3(){
   var r=document.getElementById('r3'); r.classList.add('show');
   var ext=parseFloat(document.getElementById('extentPct').value);
@@ -717,12 +700,10 @@ function evalStep3(){
   r.innerHTML='<h3>ผลการวินิจฉัย (Case P)</h3><div class="step-info">Extent: '+extent+(mi?'':' ('+ext+'%)')+'</div><div class="step-info">Stage: '+stage+' '+(severeGroup?'(III/IV group'+(cx?' — มี Complexity-shifter':'')+')':'(I/II group)')+(rh?' — มี Rehabilitation-shifter → IV':'')+'</div><div class="step-info">Grade (base): '+baseGrade+'</div>'+modNote+'<div class="dx-final">'+dx+'</div>';
   document.getElementById('cardPatientPrognosis').style.display='block';
 }
-
 function toggleParafuncManage(){
   var v=document.getElementById('parafunc').value;
   document.getElementById('parafuncManageBlock').style.display=v==='yes'?'block':'none';
 }
-
 function evalPatientPrognosis(){
   var r=document.getElementById('rPatientProg'); r.classList.add('show');
   if(!lastDxType){ r.innerHTML='<p class="error">กรุณาทำการวินิจฉัยก่อน</p>'; return; }
@@ -758,7 +739,6 @@ function evalPatientPrognosis(){
   var dxText=document.getElementById('dxForPrognosis').innerHTML;
   r.innerHTML='<h3>ผลการประเมิน Patient-level Prognosis</h3><div class="step-info">'+dxText+'</div>'+shiftNote+'<div class="prognosis-box" style="border-left-color:'+colorMap[finalPrognosis]+';background:'+bgMap[finalPrognosis]+'20;"><span style="color:'+colorMap[finalPrognosis]+';font-size:1.3rem;">Patient-level Prognosis: '+finalPrognosis+'</span><div class="prognosis-desc">'+descMap[finalPrognosis]+'</div></div>';
 }
-
 /* ===== AAP 1999 ===== */
 function calcTotalSite(){
   var t=parseInt(document.getElementById('numTeeth').value)||0; var ts=t*6;
@@ -807,14 +787,12 @@ function evalAAP(){
   r.innerHTML='<h3>ผลการวินิจฉัย (AAP 1999)</h3><div class="step-info">CAL 1-2 mm (Mild): '+pA.toFixed(2)+'%</div><div class="step-info">CAL 3-4 mm (Moderate): '+pB.toFixed(2)+'%</div><div class="step-info">CAL ≥ 5 mm (Severe): '+pC.toFixed(2)+'%</div><div class="dx-final">'+dx+'</div>';
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-
 /* ===== TOOTH-LEVEL PROGNOSIS ===== */
 function rankScore(r){ var map={F:0,Q:1,U:2,H:3}; return map[r]!==undefined?map[r]:0; }
 function worstRank(){
   var args=Array.prototype.slice.call(arguments);
   return args.reduce(function(a,b){ return rankScore(a)>=rankScore(b)?a:b; });
 }
-
 function getToothProg(num){
   var mobEl=document.getElementById('mob_'+num);
   var blEl=document.getElementById('bl_'+num);
@@ -860,7 +838,6 @@ function getToothProg(num){
   }
   return worst;
 }
-
 function calcRowProg(num){
   var prog=getToothProg(num);
   var cell=document.getElementById('prog_'+num);
@@ -870,7 +847,6 @@ function calcRowProg(num){
   if(prog===null){ cell.innerHTML='<span class="prog-badge prog-NA">—</span>'; return; }
   cell.innerHTML='<span class="prog-badge '+cls[prog]+'">'+labels[prog]+'</span>';
 }
-
 function evalToothPrognosis(){
   var r=document.getElementById('rToothProg'); r.classList.add('show');
   var allTeeth=upperTeeth.concat(lowerTeeth);
