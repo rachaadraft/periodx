@@ -484,7 +484,6 @@
         </table>
       </div>
       <p class="section-note" style="margin-top:8px;">
-        * Furcation involvement ใช้ได้เฉพาะฟันซี่ 4–8 (Premolar–Molar) เท่านั้น<br>
         * Probing Depth ต้องกรอกเป็นตัวเลข<br>
         * Bone loss ว่างไว้ = 0%, Mobility ว่างไว้ = 0, Furcation ว่างไว้ = 0
       </p>
@@ -508,19 +507,29 @@
 var upperTeeth=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
 var lowerTeeth=[38,37,36,35,34,33,32,31,41,42,43,44,45,46,47,48];
 
+/* ===== แก้ไขจุดที่ 1: hasFurcation() ===== */
+/* ปิด Furcation สำหรับ:
+   - ซี่ X1, X2, X3 (ฟันหน้า Incisor-Canine)
+   - ซี่ 34, 35 (Lower left premolar)
+   - ซี่ 44, 45 (Lower right premolar)
+   เปิดใช้ได้สำหรับ: 16,17,18,26,27,28 (Upper molar)
+                     14,15,24,25 (Upper premolar)
+                     36,37,38,46,47,48 (Lower molar) */
 function hasFurcation(num){
+  var noFurcList=[34,35,44,45];
+  if(noFurcList.indexOf(num)!==-1) return false;
   var last=num%10;
   return last>=4&&last<=8;
 }
 
 /* ===== clamp helpers ===== */
-function clampInt(el, min, max){
+function clampInt(el,min,max){
   var v=parseInt(el.value);
   if(isNaN(v)||el.value==='') return;
   if(v<min) el.value=min;
   if(v>max) el.value=max;
 }
-function clampFloat(el, min, max){
+function clampFloat(el,min,max){
   var v=parseFloat(el.value);
   if(isNaN(v)||el.value==='') return;
   if(v<min) el.value=min;
@@ -529,7 +538,6 @@ function clampFloat(el, min, max){
 
 function buildRow(num){
   var noFurc=!hasFurcation(num);
-  /* Furcation: เปลี่ยนจาก <select> เป็น <input number> step=1 min=0 max=3 */
   var furcCell=noFurc
     ?'<input type="text" disabled value="-" style="width:52px;background:#f0f0f0;color:#bbb;text-align:center;">'
     :'<input type="number" id="furc_'+num+'" min="0" max="3" step="1" placeholder="0" style="width:60px;"'
@@ -537,11 +545,9 @@ function buildRow(num){
       +' onchange="clampInt(this,0,3);calcRowProg('+num+')">';
   return '<tr id="row_'+num+'">'
     +'<td style="font-weight:700;color:var(--primary-dark);">'+num+'</td>'
-    /* Mobility: step=1 min=0 max=3 */
     +'<td><input type="number" id="mob_'+num+'" min="0" max="3" step="1" placeholder="0" style="width:60px;"'
       +' oninput="clampInt(this,0,3);calcRowProg('+num+')"'
       +' onchange="clampInt(this,0,3);calcRowProg('+num+')"></td>'
-    /* Bone loss: step=1 min=0 max=100 */
     +'<td><input type="number" id="bl_'+num+'" min="0" max="100" step="1" placeholder="0" style="width:66px;"'
       +' oninput="clampFloat(this,0,100);calcRowProg('+num+')"'
       +' onchange="clampFloat(this,0,100);calcRowProg('+num+')"></td>'
@@ -556,11 +562,11 @@ function buildRow(num){
 }
 
 /* สร้างตารางทันทีที่ DOM พร้อม */
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded',function(){
   var ub=document.getElementById('upperBody');
   var lb=document.getElementById('lowerBody');
   if(ub&&lb){
-    var uHTML='', lHTML='';
+    var uHTML='',lHTML='';
     for(var i=0;i<upperTeeth.length;i++) uHTML+=buildRow(upperTeeth[i]);
     for(var j=0;j<lowerTeeth.length;j++) lHTML+=buildRow(lowerTeeth[j]);
     ub.innerHTML=uHTML;
@@ -606,7 +612,7 @@ function switchTab(i){
 }
 
 /* ===== GLOBAL STATE ===== */
-var lastDxType='', lastStage='', lastSmokingGrade='no', lastDiabetesGrade='no';
+var lastDxType='',lastStage='',lastSmokingGrade='no',lastDiabetesGrade='no';
 
 /* ===== THAI 2018 ===== */
 function evalStep1(){
@@ -636,7 +642,7 @@ function evalStep2(){
   var r=document.getElementById('r2'); r.classList.add('show');
   if(isNaN(bop)){ r.innerHTML='<p class="error">กรุณากรอก %BOP</p>'; return; }
   if(!ps){ r.innerHTML='<p class="error">กรุณาเลือกสภาพ Periodontium</p>'; return; }
-  var caseType, dxMain;
+  var caseType,dxMain;
   if(bop<10){ caseType='H'; dxMain='Clinical gingival health'; }
   else if(bop<=30){ caseType='G'; dxMain='Localized dental plaque induced gingivitis'; }
   else{ caseType='G'; dxMain='Generalized dental plaque induced gingivitis'; }
@@ -778,7 +784,7 @@ function evalAAP(){
   var c=parseInt(document.getElementById('cal5').value)||0;
   if(ts===0){ r.innerHTML='<p class="error">กรุณากรอกจำนวนฟัน</p>'; return; }
   if(a+b+c!==ts){ r.innerHTML='<p class="error">ผลรวม sites ('+(a+b+c)+') ไม่เท่ากับ Total site ('+ts+')</p>'; return; }
-  var pA=a/ts*100, pB=b/ts*100, pC=c/ts*100;
+  var pA=a/ts*100,pB=b/ts*100,pC=c/ts*100;
   var levels=[{name:'severe',pct:pC},{name:'moderate',pct:pB},{name:'mild',pct:pA}];
   var present=levels.filter(function(l){ return l.pct>0; });
   var dx;
@@ -826,7 +832,6 @@ function getToothProg(num){
   var bl=parseFloat(blEl?blEl.value:'')||0;
   var vert=vertEl?vertEl.value:'no';
   var pd=pdVal!==''?parseFloat(pdVal):null;
-  /* furcation: ใช้ได้ทั้ง input number และ disabled input */
   var furc=furcEl&&!furcEl.disabled?parseInt(furcEl.value)||0:0;
   var localV=localEl?localEl.value:'F';
   var restV=restEl?restEl.value:'F';
