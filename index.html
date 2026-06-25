@@ -132,9 +132,15 @@
   }
   .tooth-table td { padding:5px 4px; border:1px solid var(--border); text-align:center; vertical-align:middle; }
   .tooth-table tr:nth-child(even) td { background:#fdf0f0; }
-  .tooth-table input[type=number], .tooth-table select {
+  .tooth-table input[type=number],
+  .tooth-table input[type=text],
+  .tooth-table select {
     padding:5px 6px; font-size:0.82rem; border-radius:6px; border:1.5px solid var(--border);
     width:100%; min-width:56px; background:#fff;
+    height:32px; box-sizing:border-box;
+  }
+  .tooth-table input[type=text] {
+    background:#f0f0f0;
   }
   .tooth-table input:disabled, .tooth-table select:disabled { background:#f0f0f0; border-color:#e0e0e0; }
   .arch-label { background:var(--primary-dark); color:#fff; font-weight:700; padding:6px; text-align:center; border-radius:8px; margin:10px 0 4px; font-size:0.85rem; }
@@ -515,7 +521,6 @@ function hasFurcation(num){
   var last=num%10;
   return last>=4&&last<=8;
 }
-/* ===== clamp helpers ===== */
 function clampInt(el,min,max){
   var v=parseInt(el.value);
   if(isNaN(v)||el.value==='') return;
@@ -531,7 +536,7 @@ function clampFloat(el,min,max){
 function buildRow(num){
   var noFurc=!hasFurcation(num);
   var furcCell=noFurc
-    ?'<input type="text" disabled value="-" style="width:52px;background:#f0f0f0;color:#bbb;text-align:center;">'
+    ?'<input type="text" disabled value="-" style="width:52px;text-align:center;">'
     :'<input type="number" id="furc_'+num+'" min="0" max="3" step="1" placeholder="0" style="width:60px;"'
       +' oninput="clampInt(this,0,3);calcRowProg('+num+')"'
       +' onchange="clampInt(this,0,3);calcRowProg('+num+')">';
@@ -552,7 +557,6 @@ function buildRow(num){
     +'<td class="prog-cell" id="prog_'+num+'"><span class="prog-badge prog-NA">—</span></td>'
     +'</tr>';
 }
-/* สร้างตารางทันทีที่ DOM พร้อม */
 document.addEventListener('DOMContentLoaded',function(){
   var ub=document.getElementById('upperBody');
   var lb=document.getElementById('lowerBody');
