@@ -79,6 +79,12 @@
     transition:.2s; width:100%; margin-top:18px;
   }
   button.btn:hover { background:var(--primary-dark); }
+  button.btn-outline {
+    background:#fff; color:var(--primary); border:2px solid var(--primary); padding:12px 28px;
+    border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer;
+    transition:.2s; width:100%; margin-top:10px;
+  }
+  button.btn-outline:hover { background:var(--bg); }
   .result {
     margin-top:20px; padding:20px; border-radius:14px;
     background:linear-gradient(135deg,#fff5f5,#ffeaea);
@@ -106,6 +112,7 @@
   .divider { height:1px; background:var(--border); margin:18px 0;}
   .info-box { background:#fff8e1; border:1px solid #ffe0a0; border-radius:10px; padding:12px; font-size:0.88rem; margin:10px 0; color:#7a5a00;}
   .info-box-blue { background:#e8f4fd; border:1px solid #b3d9f7; border-radius:10px; padding:12px; font-size:0.85rem; margin:10px 0; color:#1a5276;}
+  .info-box-green { background:#e8f8f0; border:1px solid #a3dfc0; border-radius:10px; padding:12px; font-size:0.85rem; margin:10px 0; color:#155724;}
   /* LOGIN */
   #loginScreen {
     position:fixed; inset:0; z-index:1000;
@@ -167,6 +174,28 @@
   .result-tooth-card .tooth-prognosis { margin-top:4px; }
   .summary-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
   .summary-chip { padding:6px 14px; border-radius:20px; font-size:0.85rem; font-weight:600; }
+  /* PRE-DIAGNOSIS SECTION */
+  .predx-select-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+  @media(max-width:600px){ .predx-select-row { grid-template-columns:1fr; } }
+  .predx-select-row select { width:100%; }
+  .predx-result-preview {
+    margin-top:14px; padding:14px; border-radius:10px;
+    background:#fff; border:2px solid var(--primary-light);
+    font-size:1rem; font-weight:600; color:var(--primary-dark);
+    display:none;
+  }
+  .predx-result-preview.show { display:block; animation:fade .3s; }
+  .section-divider-label {
+    display:flex; align-items:center; gap:10px; margin:24px 0 10px;
+    font-size:0.88rem; font-weight:600; color:#aaa;
+  }
+  .section-divider-label::before,
+  .section-divider-label::after {
+    content:''; flex:1; height:1px; background:var(--border);
+  }
+  /* Disabled/hidden workflow sections */
+  .workflow-section { transition:.2s; }
+  .workflow-section.dimmed { opacity:0.35; pointer-events:none; user-select:none; }
 </style>
 </head>
 <body>
@@ -196,120 +225,220 @@
     <button class="tab" onclick="switchTab(1)">AAP 1999 Classification</button>
     <button class="tab" onclick="switchTab(2)">Tooth-level Prognosis 2025</button>
   </div>
+
   <!-- PANEL 0 -->
   <div class="panel active" id="panel0">
-    <div class="card">
-      <h2>ใช่ Case P หรือไม่?</h2>
-      <h3>Conditions (ตรง ≥ 1 ข้อ)</h3>
-      <div class="checkbox-group">
-        <label class="check-item"><input type="checkbox" id="c11"><span>Interdental CAL ≥ 2 mm in ≥ 2 non-adjacent teeth</span></label>
-        <label class="check-item"><input type="checkbox" id="c12"><span>B/Li CAL ≥ 3 mm with PD ≥ 4 mm in ≥ 2 teeth</span></label>
-      </div>
-      <h3>ข้อยกเว้น (หากเป็นสาเหตุจากข้อใดข้อหนึ่งต่อไปนี้ จะ <u>ไม่ใช่</u> Case P)</h3>
-      <div class="checkbox-group">
-        <label class="check-item"><input type="checkbox" id="c13"><span>Gingival recession of traumatic origin (เหงือกร่นจากการแปรงฟัน)</span></label>
-        <label class="check-item"><input type="checkbox" id="c14"><span>Dental caries at cervical area</span></label>
-        <label class="check-item"><input type="checkbox" id="c15"><span>CAL on Distal of 2<sup>nd</sup> molar from 3<sup>rd</sup> molar</span></label>
-        <label class="check-item"><input type="checkbox" id="c16"><span>Endo. lesion drain through marginal periodontium</span></label>
-        <label class="check-item"><input type="checkbox" id="c17"><span>Vertical root fracture</span></label>
-      </div>
-      <button class="btn" onclick="evalStep1()">ประเมิน</button>
-      <div class="result" id="r1"></div>
-    </div>
-    <div class="card" id="cardHG" style="display:none;">
-      <h2>Case H หรือ Case G</h2>
-      <label>%BOP (Bleeding on Probing)</label>
-      <input type="number" id="bop" step="0.1" placeholder="เช่น 8.5">
-      <span class="hint">&lt;10% = Health, 10-30% = Localized gingivitis, &gt;30% = Generalized gingivitis</span>
-      <h3>สภาพ Periodontium (on... in...)</h3>
-      <div class="radio-group">
-        <label class="radio-item"><input type="radio" name="ps" value="intact"><span>ไม่มี CAL และไม่มี RBL = <b>on an intact periodontium</b></span></label>
-        <label class="radio-item"><input type="radio" name="ps" value="reduced_non"><span>มี CAL / PD ≤ 3 mm (มี RBL หรือไม่ก็ได้) / Gingival recession / เคยทำ Surgical crown lengthening = <b>on a reduced periodontium in a non-periodontitis patient</b></span></label>
-        <label class="radio-item"><input type="radio" name="ps" value="stable"><span>(สำหรับ Case H) มี CAL / RBL / PD ≤ 4 mm โดยจุด PD = 4 mm ไม่มี BOP = <b>on a reduced periodontium in a stable periodontitis patient</b></span></label>
-        <label class="radio-item"><input type="radio" name="ps" value="treated"><span>(สำหรับ Case G) มี CAL / RBL / PD ≤ 3 mm พร้อมประวัติ Successful perio. treatment = <b>on a reduced periodontium in a successfully treated periodontitis patient</b></span></label>
-      </div>
-      <div class="info-box">⚠️ หากพบ True pocket ≥ 4 mm ที่จุดที่มี BOP ให้กลับไปพิจารณาขั้นตอนแรกใหม่</div>
-      <button class="btn" onclick="evalStep2()">วินิจฉัย Case H / G</button>
-      <div class="result" id="r2"></div>
-    </div>
-    <div class="card" id="cardP" style="display:none;">
-      <h2>Case P: Extent, Stage, Grade</h2>
-      <div class="info-box">⚠️ หากไม่พบ True pocket ≥ 4 mm เมื่อ charting ให้กลับไปพิจารณา Case H/G (ยกเว้นเข้า Condition Interdental CAL ≥ 2 mm หรือ B/Li CAL ≥ 3 mm with PD ≥ 4 mm และไม่เข้าข้อยกเว้น)</div>
-      <h3>Extent</h3>
-      <label>% of teeth with CAL</label>
-      <input type="number" id="extentPct" step="0.1" placeholder="เช่น 35">
-      <div class="checkbox-group">
-        <label class="check-item"><input type="checkbox" id="molarIncisor"><span>พบ CAL เฉพาะ Molar และ/หรือ Incisor (Molar-incisor pattern)</span></label>
-      </div>
-      <div class="divider"></div>
-      <h3>Stage — พิจารณาซี่ที่มี GREATEST LOSS</h3>
-      <label>CAL (mm) ของซี่ที่มี greatest loss</label>
-      <input type="number" id="stageCAL" step="0.1" placeholder="เช่น 6">
-      <span class="hint">หรือพิจารณาจาก RBL: Coronal⅓ → Stage I/II, Middle/Apical⅓ → Stage III/IV</span>
-      <label>ตำแหน่ง RBL (ถ้าใช้แทน CAL)</label>
-      <select id="rblPos">
-        <option value="">-- ไม่ระบุ (ใช้ CAL) --</option>
-        <option value="upper">Upper half of coronal ⅓</option>
-        <option value="lower">Lower half of coronal ⅓</option>
-        <option value="middle">Middle ⅓ of root</option>
-        <option value="apical">Apical ⅓ of root</option>
+
+    <!-- ===== PRE-DIAGNOSIS CARD ===== -->
+    <div class="card" id="cardPreDx">
+      <h2>ทราบคำวินิจฉัยอยู่ก่อนแล้วหรือไม่?</h2>
+      <p style="font-size:0.93rem;color:#555;margin-bottom:6px;">
+        ในกรณีที่ทราบคำวินิจฉัยอยู่ก่อนแล้ว และต้องการให้ Patient-level Prognosis กรุณากรอกคำวินิจฉัยที่ได้
+      </p>
+      <p class="section-note">หากยังไม่ทราบคำวินิจฉัย ให้เว้นว่างไว้ทุกช่อง แล้วเลื่อนลงเพื่อเริ่มกระบวนการวินิจฉัยตามปกติ</p>
+
+      <h3>เลือกประเภทคำวินิจฉัย</h3>
+      <select id="preDxType" onchange="onPreDxTypeChange()">
+        <option value="">— ยังไม่ทราบ / ต้องการวินิจฉัยใหม่ —</option>
+        <option value="H">Case H — Clinical gingival health</option>
+        <option value="G">Case G — Gingivitis</option>
+        <option value="P">Case P — Periodontitis</option>
       </select>
-      <h3>Complexity-shifter (ตรง ≥ 1 ข้อ → Stage III/IV)</h3>
-      <div class="checkbox-group">
-        <label class="check-item"><input type="checkbox" id="cx1"><span>PD ≥ 6 mm</span></label>
-        <label class="check-item"><input type="checkbox" id="cx2"><span>Furcation involvement grade II, III</span></label>
-        <label class="check-item"><input type="checkbox" id="cx3"><span>Vertical bone loss ≥ 3 mm</span></label>
-        <label class="check-item"><input type="checkbox" id="cx4"><span>Perio tooth loss</span></label>
-        <label class="check-item"><input type="checkbox" id="cx5"><span>Ridge defect</span></label>
+
+      <!-- Case H sub-options -->
+      <div id="preDxH" style="display:none;margin-top:14px;">
+        <h3>สภาพ Periodontium (Case H)</h3>
+        <select id="preDxHSub">
+          <option value="intact">on an intact periodontium</option>
+          <option value="stable">on a reduced periodontium in a stable periodontitis patient</option>
+        </select>
       </div>
-      <h3>Rehabilitation-shifter (ตรง ≥ 1 ข้อ → Stage IV)</h3>
-      <div class="checkbox-group">
-        <label class="check-item"><input type="checkbox" id="rh1"><span>Perio. tooth loss ≥ 5</span></label>
-        <label class="check-item"><input type="checkbox" id="rh2"><span>คู่สบ &lt; 10 คู่</span></label>
-        <label class="check-item"><input type="checkbox" id="rh3"><span>2<sup>nd</sup> Occlusal trauma โยก ≥ 2°</span></label>
-        <label class="check-item"><input type="checkbox" id="rh4"><span>Bite collapse, drift, flare (Pathologic migration)</span></label>
-        <label class="check-item"><input type="checkbox" id="rh5"><span>Severe ridge defect</span></label>
+
+      <!-- Case G sub-options -->
+      <div id="preDxG" style="display:none;margin-top:14px;">
+        <h3>Extent (Case G)</h3>
+        <select id="preDxGExtent">
+          <option value="localized">Localized</option>
+          <option value="generalized">Generalized</option>
+        </select>
+        <h3 style="margin-top:12px;">สภาพ Periodontium (Case G)</h3>
+        <select id="preDxGSub">
+          <option value="intact">on an intact periodontium</option>
+          <option value="reduced_non">on a reduced periodontium in a non-periodontitis patient</option>
+          <option value="treated">on a reduced periodontium in a successfully treated periodontitis patient</option>
+        </select>
       </div>
-      <div class="divider"></div>
-      <h3>Grade — พิจารณาซี่ที่มี GREATEST LOSS</h3>
-      <label>มีประวัติ Periodontitis progression over 5 years หรือไม่?</label>
-      <select id="hasProgression" onchange="toggleGrade()">
-        <option value="no">ไม่มีประวัติ (ใช้ % Bone loss/Age)</option>
-        <option value="yes">มีประวัติ (ใช้ direct evidence)</option>
-      </select>
-      <div id="gradeDirect" style="display:none;">
-        <label>การสูญเสียในช่วง 5 ปี (mm)</label>
-        <input type="number" id="progLoss" step="0.1" placeholder="เช่น 1.5">
-        <span class="hint">No loss = A, &lt;2 mm = B, ≥2 mm = C</span>
+
+      <!-- Case P sub-options -->
+      <div id="preDxP" style="display:none;margin-top:14px;">
+        <div class="predx-select-row">
+          <div>
+            <label>Extent</label>
+            <select id="preDxPExtent">
+              <option value="localized">Localized</option>
+              <option value="generalized">Generalized</option>
+              <option value="molar_incisor">Molar-incisor pattern</option>
+            </select>
+          </div>
+          <div>
+            <label>Stage</label>
+            <select id="preDxPStage" onchange="onPreDxPStageChange()">
+              <option value="I">Stage I</option>
+              <option value="II">Stage II</option>
+              <option value="III">Stage III</option>
+              <option value="IV">Stage IV</option>
+            </select>
+          </div>
+          <div>
+            <label>Grade</label>
+            <select id="preDxPGrade">
+              <option value="A">Grade A</option>
+              <option value="B">Grade B</option>
+              <option value="C">Grade C</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div id="gradeIndirect">
-        <label>% Bone loss</label>
-        <input type="number" id="boneLoss" step="0.1" placeholder="เช่น 50">
-        <label>อายุผู้ป่วย (ปี)</label>
-        <input type="number" id="age" step="1" placeholder="เช่น 25">
-        <span class="hint">Bone loss/Age: &lt;0.25 = A, 0.25-1 = B, &gt;1 = C</span>
+
+      <!-- Preview & confirm -->
+      <div id="preDxPreview" class="predx-result-preview"></div>
+
+      <div id="preDxBtnGroup" style="display:none;margin-top:4px;">
+        <button class="btn" onclick="applyPreDx()">ใช้คำวินิจฉัยนี้ และประเมิน Patient-level Prognosis</button>
+        <button class="btn-outline" onclick="clearPreDx()">ล้างข้อมูล / วินิจฉัยใหม่</button>
       </div>
-      <h3>Grade modifiers</h3>
-      <label>Smoking</label>
-      <select id="smoking">
-        <option value="no">ไม่สูบบุหรี่ (No upgrade)</option>
-        <option value="low">&lt; 10 มวน/วัน (Upgrade to B)</option>
-        <option value="high">≥ 10 มวน/วัน (Upgrade to C)</option>
-      </select>
-      <label>Diabetes</label>
-      <select id="diabetes">
-        <option value="no">ไม่เป็นเบาหวาน (No upgrade)</option>
-        <option value="low">HbA1c &lt; 7 (Upgrade to B)</option>
-        <option value="high">HbA1c ≥ 7 (Upgrade to C)</option>
-      </select>
-      <button class="btn" onclick="evalStep3()">วินิจฉัย Case P</button>
-      <div class="result" id="r3"></div>
-      <div class="remarks">
-        <b>Remarks for staging &amp; grading:</b><br>
-        • Don't have to match every cell of the grid<br>
-        • Don't forget "Clinician's judgement"
+      <div id="preDxAppliedNote" style="display:none;">
+        <div class="info-box-green" style="margin-top:12px;">
+          ✅ ใช้คำวินิจฉัยที่กรอกไว้แล้ว — ส่วนการวินิจฉัยด้านล่างถูกข้ามไป กรุณาเลื่อนลงเพื่อประเมิน Patient-level Prognosis
+        </div>
+        <button class="btn-outline" onclick="clearPreDx()" style="margin-top:8px;">ล้างข้อมูล / วินิจฉัยใหม่</button>
       </div>
     </div>
+
+    <!-- ===== DIVIDER ===== -->
+    <div class="section-divider-label" id="workflowDivider">หรือวินิจฉัยโดยกรอกข้อมูลตามขั้นตอนด้านล่าง</div>
+
+    <!-- ===== WORKFLOW SECTIONS (can be dimmed) ===== -->
+    <div class="workflow-section" id="workflowSections">
+
+      <div class="card">
+        <h2>ใช่ Case P หรือไม่?</h2>
+        <h3>Conditions (ตรง ≥ 1 ข้อ)</h3>
+        <div class="checkbox-group">
+          <label class="check-item"><input type="checkbox" id="c11"><span>Interdental CAL ≥ 2 mm in ≥ 2 non-adjacent teeth</span></label>
+          <label class="check-item"><input type="checkbox" id="c12"><span>B/Li CAL ≥ 3 mm with PD ≥ 4 mm in ≥ 2 teeth</span></label>
+        </div>
+        <h3>ข้อยกเว้น (หากเป็นสาเหตุจากข้อใดข้อหนึ่งต่อไปนี้ จะ <u>ไม่ใช่</u> Case P)</h3>
+        <div class="checkbox-group">
+          <label class="check-item"><input type="checkbox" id="c13"><span>Gingival recession of traumatic origin (เหงือกร่นจากการแปรงฟัน)</span></label>
+          <label class="check-item"><input type="checkbox" id="c14"><span>Dental caries at cervical area</span></label>
+          <label class="check-item"><input type="checkbox" id="c15"><span>CAL on Distal of 2<sup>nd</sup> molar from 3<sup>rd</sup> molar</span></label>
+          <label class="check-item"><input type="checkbox" id="c16"><span>Endo. lesion drain through marginal periodontium</span></label>
+          <label class="check-item"><input type="checkbox" id="c17"><span>Vertical root fracture</span></label>
+        </div>
+        <button class="btn" onclick="evalStep1()">ประเมิน</button>
+        <div class="result" id="r1"></div>
+      </div>
+
+      <div class="card" id="cardHG" style="display:none;">
+        <h2>Case H หรือ Case G</h2>
+        <label>%BOP (Bleeding on Probing)</label>
+        <input type="number" id="bop" step="0.1" placeholder="เช่น 8.5">
+        <span class="hint">&lt;10% = Health, 10-30% = Localized gingivitis, &gt;30% = Generalized gingivitis</span>
+        <h3>สภาพ Periodontium (on... in...)</h3>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="ps" value="intact"><span>ไม่มี CAL และไม่มี RBL = <b>on an intact periodontium</b></span></label>
+          <label class="radio-item"><input type="radio" name="ps" value="reduced_non"><span>มี CAL / PD ≤ 3 mm (มี RBL หรือไม่ก็ได้) / Gingival recession / เคยทำ Surgical crown lengthening = <b>on a reduced periodontium in a non-periodontitis patient</b></span></label>
+          <label class="radio-item"><input type="radio" name="ps" value="stable"><span>(สำหรับ Case H) มี CAL / RBL / PD ≤ 4 mm โดยจุด PD = 4 mm ไม่มี BOP = <b>on a reduced periodontium in a stable periodontitis patient</b></span></label>
+          <label class="radio-item"><input type="radio" name="ps" value="treated"><span>(สำหรับ Case G) มี CAL / RBL / PD ≤ 3 mm พร้อมประวัติ Successful perio. treatment = <b>on a reduced periodontium in a successfully treated periodontitis patient</b></span></label>
+        </div>
+        <div class="info-box">⚠️ หากพบ True pocket ≥ 4 mm ที่จุดที่มี BOP ให้กลับไปพิจารณาขั้นตอนแรกใหม่</div>
+        <button class="btn" onclick="evalStep2()">วินิจฉัย Case H / G</button>
+        <div class="result" id="r2"></div>
+      </div>
+
+      <div class="card" id="cardP" style="display:none;">
+        <h2>Case P: Extent, Stage, Grade</h2>
+        <div class="info-box">⚠️ หากไม่พบ True pocket ≥ 4 mm เมื่อ charting ให้กลับไปพิจารณา Case H/G (ยกเว้นเข้า Condition Interdental CAL ≥ 2 mm หรือ B/Li CAL ≥ 3 mm with PD ≥ 4 mm และไม่เข้าข้อยกเว้น)</div>
+        <h3>Extent</h3>
+        <label>% of teeth with CAL</label>
+        <input type="number" id="extentPct" step="0.1" placeholder="เช่น 35">
+        <div class="checkbox-group">
+          <label class="check-item"><input type="checkbox" id="molarIncisor"><span>พบ CAL เฉพาะ Molar และ/หรือ Incisor (Molar-incisor pattern)</span></label>
+        </div>
+        <div class="divider"></div>
+        <h3>Stage — พิจารณาซี่ที่มี GREATEST LOSS</h3>
+        <label>CAL (mm) ของซี่ที่มี greatest loss</label>
+        <input type="number" id="stageCAL" step="0.1" placeholder="เช่น 6">
+        <span class="hint">หรือพิจารณาจาก RBL: Coronal⅓ → Stage I/II, Middle/Apical⅓ → Stage III/IV</span>
+        <label>ตำแหน่ง RBL (ถ้าใช้แทน CAL)</label>
+        <select id="rblPos">
+          <option value="">-- ไม่ระบุ (ใช้ CAL) --</option>
+          <option value="upper">Upper half of coronal ⅓</option>
+          <option value="lower">Lower half of coronal ⅓</option>
+          <option value="middle">Middle ⅓ of root</option>
+          <option value="apical">Apical ⅓ of root</option>
+        </select>
+        <h3>Complexity-shifter (ตรง ≥ 1 ข้อ → Stage III/IV)</h3>
+        <div class="checkbox-group">
+          <label class="check-item"><input type="checkbox" id="cx1"><span>PD ≥ 6 mm</span></label>
+          <label class="check-item"><input type="checkbox" id="cx2"><span>Furcation involvement grade II, III</span></label>
+          <label class="check-item"><input type="checkbox" id="cx3"><span>Vertical bone loss ≥ 3 mm</span></label>
+          <label class="check-item"><input type="checkbox" id="cx4"><span>Perio tooth loss</span></label>
+          <label class="check-item"><input type="checkbox" id="cx5"><span>Ridge defect</span></label>
+        </div>
+        <h3>Rehabilitation-shifter (ตรง ≥ 1 ข้อ → Stage IV)</h3>
+        <div class="checkbox-group">
+          <label class="check-item"><input type="checkbox" id="rh1"><span>Perio. tooth loss ≥ 5</span></label>
+          <label class="check-item"><input type="checkbox" id="rh2"><span>คู่สบ &lt; 10 คู่</span></label>
+          <label class="check-item"><input type="checkbox" id="rh3"><span>2<sup>nd</sup> Occlusal trauma โยก ≥ 2°</span></label>
+          <label class="check-item"><input type="checkbox" id="rh4"><span>Bite collapse, drift, flare (Pathologic migration)</span></label>
+          <label class="check-item"><input type="checkbox" id="rh5"><span>Severe ridge defect</span></label>
+        </div>
+        <div class="divider"></div>
+        <h3>Grade — พิจารณาซี่ที่มี GREATEST LOSS</h3>
+        <label>มีประวัติ Periodontitis progression over 5 years หรือไม่?</label>
+        <select id="hasProgression" onchange="toggleGrade()">
+          <option value="no">ไม่มีประวัติ (ใช้ % Bone loss/Age)</option>
+          <option value="yes">มีประวัติ (ใช้ direct evidence)</option>
+        </select>
+        <div id="gradeDirect" style="display:none;">
+          <label>การสูญเสียในช่วง 5 ปี (mm)</label>
+          <input type="number" id="progLoss" step="0.1" placeholder="เช่น 1.5">
+          <span class="hint">No loss = A, &lt;2 mm = B, ≥2 mm = C</span>
+        </div>
+        <div id="gradeIndirect">
+          <label>% Bone loss</label>
+          <input type="number" id="boneLoss" step="0.1" placeholder="เช่น 50">
+          <label>อายุผู้ป่วย (ปี)</label>
+          <input type="number" id="age" step="1" placeholder="เช่น 25">
+          <span class="hint">Bone loss/Age: &lt;0.25 = A, 0.25-1 = B, &gt;1 = C</span>
+        </div>
+        <h3>Grade modifiers</h3>
+        <label>Smoking</label>
+        <select id="smoking">
+          <option value="no">ไม่สูบบุหรี่ (No upgrade)</option>
+          <option value="low">&lt; 10 มวน/วัน (Upgrade to B)</option>
+          <option value="high">≥ 10 มวน/วัน (Upgrade to C)</option>
+        </select>
+        <label>Diabetes</label>
+        <select id="diabetes">
+          <option value="no">ไม่เป็นเบาหวาน (No upgrade)</option>
+          <option value="low">HbA1c &lt; 7 (Upgrade to B)</option>
+          <option value="high">HbA1c ≥ 7 (Upgrade to C)</option>
+        </select>
+        <button class="btn" onclick="evalStep3()">วินิจฉัย Case P</button>
+        <div class="result" id="r3"></div>
+        <div class="remarks">
+          <b>Remarks for staging &amp; grading:</b><br>
+          • Don't have to match every cell of the grid<br>
+          • Don't forget "Clinician's judgement"
+        </div>
+      </div>
+
+    </div><!-- end workflowSections -->
+
+    <!-- PATIENT PROGNOSIS (always outside workflow dim) -->
     <div class="card" id="cardPatientPrognosis" style="display:none;">
       <h2>Patient-level Prognosis
         <span style="font-size:0.72rem;font-weight:400;color:#999;display:block;margin-top:2px;">(Thai Association of Periodontology: An Update in Periodontal Prognosis 2025)</span>
@@ -386,7 +515,9 @@
       <button class="btn" onclick="evalPatientPrognosis()">ประเมิน Patient-level Prognosis</button>
       <div class="result" id="rPatientProg"></div>
     </div>
-  </div>
+
+  </div><!-- end panel0 -->
+
   <!-- PANEL 1: AAP 1999 -->
   <div class="panel" id="panel1">
     <div class="card">
@@ -416,7 +547,7 @@
       <h3>Chronic periodontitis</h3>
       <p class="step-info">เกี่ยวกับ Local factor (Chronic plaque/calculus) — Extent + Severity (ใช้เครื่องคำนวณด้านบน)</p>
       <h3>Aggressive periodontitis</h3>
-      <p class="step-info">• Localized: 1<sup>st</sup> Molar + Incisor ไม่พบที่อื่น หรือ ≤ 2 ซี่<br>• Generalized: 1<sup>st</sup> Molar + Incisor พบที่อื่น &gt; 3 ซี่</p>
+      <p class="step-info">• Localized: 1<sup>st</sup> Molar + Incisor ไม่พบที่อื่น หรือ ≤ 2ซี่<br>• Generalized: 1<sup>st</sup> Molar + Incisor พบที่อื่น &gt; 3 ซี่</p>
       <h3>Necrotizing periodontal disease</h3>
       <p class="step-info">• NUG: รอยแผลจำกัดที่เหงือก<br>• NUP: มี Attachment loss, Bone loss<br>• NUS: รอยแผลที่ Vestibule, Palate</p>
       <h3>Abscess of periodontium</h3>
@@ -424,6 +555,7 @@
       <p class="step-info">• Periodontal-Endodontic lesions<br>• Endodontic-Periodontal lesion<br>• Combined lesion</p>
     </div>
   </div>
+
   <!-- PANEL 2: TOOTH-LEVEL PROGNOSIS -->
   <div class="panel" id="panel2">
     <div class="card">
@@ -431,7 +563,7 @@
         <span style="font-size:0.72rem;font-weight:400;color:#999;display:block;margin-top:2px;">(Thai Association of Periodontology 2025)</span>
       </h2>
       <h3>ข้อมูลปัจจัยทางระบบ (เฉพาะกรณีที่เกี่ยวข้อง)</h3>
-      <p class="section-note">กรอกเฉพาะผู้ป่วยที่เป็นเบาหวานหรือสูบบุหรี่ — หาก HbA1c ≥ 7% และ/หรือสูบ ≥ 10 มวน/วัน จะปรับฟันที่ Questionable → Unfavorable</p>
+      <p class="section-note">กรอกเฉพาะผู้ป่วยที่เป็นเบาหวานหรือสูบบุหรี่ — หาก HbA1c ≥ 7%และ/หรือสูบ ≥ 10 มวน/วัน จะปรับฟันที่ Questionable → Unfavorable</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div>
           <label>HbA1c (%)</label>
@@ -511,6 +643,7 @@
   <span style="opacity:0.8;">This website is for personal use only. If you have any feedback, please contact <a href="mailto:rachadol.t@sut.ac.th">rachadol.t@sut.ac.th</a></span>
 </footer>
 </div>
+
 <script>
 /* ===== TOOTH TABLE DATA ===== */
 var upperTeeth=[18,17,16,15,14,13,12,11,21,22,23,24,25,26,27,28];
@@ -569,6 +702,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
   if(isLoggedIn){ showApp(); }
 });
+
 /* ===== LOGIN ===== */
 var VALID_USER='periodx', VALID_PASS='periosut';
 var isLoggedIn=false;
@@ -597,13 +731,125 @@ function doLogout(){
   try{ sessionStorage.removeItem('perioAuth'); }catch(e){}
   location.reload();
 }
+
 /* ===== TABS ===== */
 function switchTab(i){
   document.querySelectorAll('.tab').forEach(function(t,idx){ t.classList.toggle('active',idx===i); });
   document.querySelectorAll('.panel').forEach(function(p,idx){ p.classList.toggle('active',idx===i); });
 }
+
 /* ===== GLOBAL STATE ===== */
 var lastDxType='',lastStage='',lastSmokingGrade='no',lastDiabetesGrade='no';
+var preDxApplied=false;
+
+/* ===== PRE-DIAGNOSIS SECTION ===== */
+function onPreDxTypeChange(){
+  var type=document.getElementById('preDxType').value;
+  document.getElementById('preDxH').style.display=(type==='H')?'block':'none';
+  document.getElementById('preDxG').style.display=(type==='G')?'block':'none';
+  document.getElementById('preDxP').style.display=(type==='P')?'block':'none';
+  if(type===''){
+    document.getElementById('preDxPreview').classList.remove('show');
+    document.getElementById('preDxPreview').innerHTML='';
+    document.getElementById('preDxBtnGroup').style.display='none';
+  } else {
+    updatePreDxPreview();
+    document.getElementById('preDxBtnGroup').style.display='block';
+  }
+}
+function onPreDxPStageChange(){
+  updatePreDxPreview();
+}
+function updatePreDxPreview(){
+  var type=document.getElementById('preDxType').value;
+  if(!type) return;
+  var dxText=buildPreDxText();
+  var prev=document.getElementById('preDxPreview');
+  prev.innerHTML='<span style="font-size:0.82rem;color:#888;font-weight:400;">คำวินิจฉัยที่จะใช้:</span><br>'+dxText;
+  prev.classList.add('show');
+}
+function buildPreDxText(){
+  var type=document.getElementById('preDxType').value;
+  var subMap={
+    intact:'on an intact periodontium',
+    reduced_non:'on a reduced periodontium in a non-periodontitis patient',
+    stable:'on a reduced periodontium in a stable periodontitis patient',
+    treated:'on a reduced periodontium in a successfully treated periodontitis patient'
+  };
+  if(type==='H'){
+    var sub=document.getElementById('preDxHSub').value;
+    return 'Clinical gingival health '+subMap[sub];
+  }
+  if(type==='G'){
+    var ext=document.getElementById('preDxGExtent').value;
+    var sub2=document.getElementById('preDxGSub').value;
+    var extLabel=ext==='localized'?'Localized':'Generalized';
+    return extLabel+' dental plaque induced gingivitis '+subMap[sub2];
+  }
+  if(type==='P'){
+    var extP=document.getElementById('preDxPExtent').value;
+    var stg=document.getElementById('preDxPStage').value;
+    var grd=document.getElementById('preDxPGrade').value;
+    var extLabels={localized:'Localized',generalized:'Generalized',molar_incisor:'Molar-incisor pattern'};
+    return extLabels[extP]+' periodontitis stage '+stg+' grade '+grd;
+  }
+  return '';
+}
+function applyPreDx(){
+  var type=document.getElementById('preDxType').value;
+  if(!type) return;
+  var dxText=buildPreDxText();
+  /* Set global state */
+  if(type==='H'){
+    lastDxType='H'; lastStage='';
+  } else if(type==='G'){
+    lastDxType='G'; lastStage='';
+  } else if(type==='P'){
+    lastDxType='P';
+    var stg=document.getElementById('preDxPStage').value;
+    var extP=document.getElementById('preDxPExtent').value;
+    lastStage=(extP==='molar_incisor')?'MI':stg;
+  }
+  /* Update dx display for prognosis card */
+  document.getElementById('dxForPrognosis').innerHTML='<b>Diagnosis:</b> '+dxText;
+  /* Show prognosis card, dim workflow */
+  preDxApplied=true;
+  document.getElementById('workflowSections').classList.add('dimmed');
+  document.getElementById('cardPatientPrognosis').style.display='block';
+  document.getElementById('preDxBtnGroup').style.display='none';
+  document.getElementById('preDxAppliedNote').style.display='block';
+  document.getElementById('preDxPreview').classList.remove('show');
+  /* Scroll to prognosis card */
+  setTimeout(function(){
+    document.getElementById('cardPatientPrognosis').scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+}
+function clearPreDx(){
+  preDxApplied=false;
+  document.getElementById('preDxType').value='';
+  document.getElementById('preDxH').style.display='none';
+  document.getElementById('preDxG').style.display='none';
+  document.getElementById('preDxP').style.display='none';
+  document.getElementById('preDxPreview').classList.remove('show');
+  document.getElementById('preDxPreview').innerHTML='';
+  document.getElementById('preDxBtnGroup').style.display='none';
+  document.getElementById('preDxAppliedNote').style.display='none';
+  document.getElementById('workflowSections').classList.remove('dimmed');
+  document.getElementById('cardPatientPrognosis').style.display='none';
+  document.getElementById('dxForPrognosis').innerHTML='— ยังไม่ได้วินิจฉัย โปรดทำการวินิจฉัยก่อน —';
+  lastDxType=''; lastStage='';
+  var rPP=document.getElementById('rPatientProg');
+  rPP.classList.remove('show'); rPP.innerHTML='';
+}
+
+/* Add live-update listeners for sub-selects in pre-dx */
+document.addEventListener('DOMContentLoaded',function(){
+  ['preDxHSub','preDxGExtent','preDxGSub','preDxPExtent','preDxPStage','preDxPGrade'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('change',function(){ if(document.getElementById('preDxType').value) updatePreDxPreview(); });
+  });
+});
+
 /* ===== THAI 2018 ===== */
 function evalStep1(){
   var c11=document.getElementById('c11').checked;
@@ -701,7 +947,7 @@ function evalStep3(){
   document.getElementById('dxForPrognosis').innerHTML='<b>Diagnosis:</b> '+dx;
   if(lastSmokingGrade&&lastSmokingGrade!=='no'){ document.getElementById('smokingProg').value=lastSmokingGrade; document.getElementById('smokingProgNote').textContent='(ดึงข้อมูลจากการวินิจฉัยอัตโนมัติ)'; }
   if(lastDiabetesGrade&&lastDiabetesGrade!=='no'){ document.getElementById('diabetesProg').value=lastDiabetesGrade; document.getElementById('diabetesProgNote').textContent='(ดึงข้อมูลจากการวินิจฉัยอัตโนมัติ)'; }
-  r.innerHTML='<h3>ผลการวินิจฉัย (Case P)</h3><div class="step-info">Extent: '+extent+(mi?'':' ('+ext+'%)')+'</div><div class="step-info">Stage: '+stage+' '+(severeGroup?'(III/IV group'+(cx?' — มี Complexity-shifter':'')+')':'(I/II group)')+(rh?' — มี Rehabilitation-shifter → IV':'')+'</div><div class="step-info">Grade (base): '+baseGrade+'</div>'+modNote+'<div class="dx-final">'+dx+'</div>';
+  r.innerHTML='<h3>ผลการวินิจฉัย (Case P)</h3><div class="step-info">Extent: '+extent+(mi?'':' ('+ext+'%)')+'</div><div class="step-info">Stage: '+stage+' '+(severeGroup?'(III/IV group'+(cx?' — มี Complexity-shifter':'')+')':'(I/II group)')+(rh?' — มี Rehabilitation-shifter →IV':'')+'</div><div class="step-info">Grade (base): '+baseGrade+'</div>'+modNote+'<div class="dx-final">'+dx+'</div>';
   document.getElementById('cardPatientPrognosis').style.display='block';
 }
 function toggleParafuncManage(){
@@ -732,7 +978,7 @@ function evalPatientPrognosis(){
   if(oh==='poor'){ shiftCount++; shiftReasons.push('Oral hygiene ไม่ดี / plaque control ไม่ดี'); }
   if(maint==='poor'){ shiftCount++; shiftReasons.push('Periodontal maintenance ไม่สม่ำเสมอ'); }
   if(para==='yes'&&paraManage==='no'){ shiftCount++; shiftReasons.push('มี Parafunctional habits และยังไม่ได้รับการจัดการ'); }
-  if(teeth==='less'){ shiftCount++; shiftReasons.push('ฟันเหลือน้อยกว่า 20 ซี่ / คู่สบน้อยกว่า 10 คู่'); }
+  if(teeth==='less'){ shiftCount++; shiftReasons.push('ฟันเหลือน้อยกว่า 20 ซี่ / คู่สบน้อยกว่า 10คู่'); }
   if(otherOcc==='yes'){ shiftCount++; shiftReasons.push('มีปัญหาด้านการสบฟันอื่น ๆ'); }
   var finalPrognosis=basePrognosis;
   if(shiftCount>0){ var idx=progLevels.indexOf(basePrognosis); finalPrognosis=progLevels[Math.min(idx+1,2)]; }
@@ -743,6 +989,7 @@ function evalPatientPrognosis(){
   var dxText=document.getElementById('dxForPrognosis').innerHTML;
   r.innerHTML='<h3>ผลการประเมิน Patient-level Prognosis</h3><div class="step-info">'+dxText+'</div>'+shiftNote+'<div class="prognosis-box" style="border-left-color:'+colorMap[finalPrognosis]+';background:'+bgMap[finalPrognosis]+'20;"><span style="color:'+colorMap[finalPrognosis]+';font-size:1.3rem;">Patient-level Prognosis: '+finalPrognosis+'</span><div class="prognosis-desc">'+descMap[finalPrognosis]+'</div></div>';
 }
+
 /* ===== AAP 1999 ===== */
 function calcTotalSite(){
   var t=parseInt(document.getElementById('numTeeth').value)||0; var ts=t*6;
@@ -791,6 +1038,7 @@ function evalAAP(){
   r.innerHTML='<h3>ผลการวินิจฉัย (AAP 1999)</h3><div class="step-info">CAL 1-2 mm (Mild): '+pA.toFixed(2)+'%</div><div class="step-info">CAL 3-4 mm (Moderate): '+pB.toFixed(2)+'%</div><div class="step-info">CAL ≥ 5 mm (Severe): '+pC.toFixed(2)+'%</div><div class="dx-final">'+dx+'</div>';
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
 /* ===== TOOTH-LEVEL PROGNOSIS ===== */
 function rankScore(r){ var map={F:0,Q:1,U:2,H:3}; return map[r]!==undefined?map[r]:0; }
 function worstRank(){
